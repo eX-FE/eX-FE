@@ -1,0 +1,269 @@
+.sidebar {
+  width: 275px;
+  height: 100vh;
+  padding: 8px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: white;
+  border-right: 1px solid #eff3f4;
+  z-index: 1000;
+}
+
+.logo {
+  padding: 12px;
+  margin-bottom: 8px;
+  width: fit-content;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.logo:hover {
+  background: rgba(15, 20, 25, 0.1);
+}
+
+.logoIcon {
+  width: 30px;
+  height: 30px;
+  fill: #0f1419;
+}
+
+.nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 25px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  color: #0f1419;
+  font-size: 20px;
+  font-weight: 400;
+  gap: 16px;
+  text-align: left;
+  width: 100%;
+}
+
+.navItem:hover {
+  background: rgba(15, 20, 25, 0.1);
+}
+
+.navItem.active {
+  font-weight: 700;
+}
+
+.navItem.active .icon {
+  fill: #1d9bf0;
+}
+
+.icon {
+  width: 26px;
+  height: 26px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.activeIcon {
+  fill: #1d9bf0 !important;
+}
+
+.navText {
+  font-family: TwitterChirp, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.mainPostBtn {
+  background: #1d9bf0;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 16px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.mainPostBtn:hover {
+  background: #1a8cd8;
+}
+
+.postBtnText {
+  font-family: TwitterChirp, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.userProfile {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.userProfile:hover {
+  background: rgba(15, 20, 25, 0.1);
+}
+
+.userAvatar {
+  flex-shrink: 0;
+}
+
+.avatarPlaceholder {
+  width: 40px;
+  height: 40px;
+  background: #cfd9de;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.userInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.userName {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f1419;
+  line-height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.userHandle {
+  font-size: 15px;
+  color: #536471;
+  line-height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.moreOptions {
+  flex-shrink: 0;
+}
+
+.moreIcon {
+  width: 18px;
+  height: 18px;
+  fill: #536471;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .sidebar {
+    background: #000;
+    border-right-color: #2f3336;
+  }
+
+  .logoIcon {
+    fill: #e7e9ea;
+  }
+
+  .logo:hover {
+    background: rgba(239, 243, 244, 0.1);
+  }
+
+  .navItem {
+    color: #e7e9ea;
+  }
+
+  .navItem:hover {
+    background: rgba(239, 243, 244, 0.1);
+  }
+
+  .userProfile:hover {
+    background: rgba(239, 243, 244, 0.1);
+  }
+
+  .avatarPlaceholder {
+    background: #3e4144;
+  }
+
+  .userName {
+    color: #e7e9ea;
+  }
+
+  .userHandle {
+    color: #71767b;
+  }
+
+  .moreIcon {
+    fill: #71767b;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .sidebar {
+    width: 88px;
+    padding: 8px 12px 20px;
+  }
+
+  .navText {
+    display: none;
+  }
+
+  .navItem {
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .mainPostBtn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .postBtnText {
+    display: none;
+  }
+
+  .mainPostBtn::after {
+    content: '+';
+    font-size: 24px;
+    font-weight: 400;
+  }
+
+  .userProfile {
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .userInfo {
+    display: none;
+  }
+
+  .moreOptions {
+    display: none;
+  }
+}
+
+@media (max-width: 688px) {
+  .sidebar {
+    display: none;
+  }
+}
