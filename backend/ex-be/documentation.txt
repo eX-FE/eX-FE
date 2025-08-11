@@ -1,0 +1,9 @@
+Health: curl http://localhost:5000/health
+Register: curl -X POST http://localhost:5000/auth/register -H "Content-Type: application/json" -d '{"email":"a@b.com","password":"Test123!","username":"ab"}'
+Login: curl -X POST http://localhost:5000/auth/login -H "Content-Type: application/json" -d '{"email":"a@b.com","password":"Test123!"}'
+Use access token: curl http://localhost:5000/auth/me -H "Authorization: Bearer PASTE_ACCESS_TOKEN"
+Get Refresh token: curl -i -X POST http://localhost:5000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"a@b.com","password":"Test123!"}'
+Refresh: curl -X POST http://localhost:5000/auth/refresh --cookie "refresh_token=PASTE_REFRESH_COOKIE_VALUE"
+

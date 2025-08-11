@@ -1,0 +1,184 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  padding: 20px;
+}
+
+.login-container { 
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.login-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 0 8px 0;
+  color: #000;
+}
+
+.login-subtitle {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-weight: 500;
+  font-size: 14px;
+  color: #333;
+}
+
+.form-input {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #000;
+}
+
+.form-input::placeholder {
+  color: #999;
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.checkbox {
+  margin: 0;
+}
+
+.checkbox-text {
+  font-size: 14px;
+  color: #555;
+}
+
+.forgot-password {
+  font-size: 14px;
+  color: #000;
+  text-decoration: none;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+.login-button {
+  padding: 12px;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.login-button:hover {
+  background-color: #333;
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.signup-text {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.signup-link {
+  color: #000;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .login-page {
+    background-color: #0a0a0a;
+  }
+  
+  .login-container {
+    background: #1a1a1a;
+    color: #ededed;
+  }
+  
+  .login-title {
+    color: #ededed;
+  }
+  
+  .form-label {
+    color: #ededed;
+  }
+  
+  .form-input {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #ededed;
+  }
+  
+  .form-input:focus {
+    border-color: #666;
+  }
+  
+  .login-button {
+    background-color: #ededed;
+    color: #0a0a0a;
+  }
+  
+  .login-button:hover {
+    background-color: #ccc;
+  }
+  
+  .forgot-password,
+  .signup-link {
+    color: #ededed;
+  }
+}
