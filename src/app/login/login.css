@@ -365,6 +365,16 @@
   .auth-overlay { background: rgba(21, 32, 43, 0.6); backdrop-filter: blur(2px); }
 }
 
+/* Override Google button container inside modals to avoid double-styling */
+.auth-modal .oauth-google {
+  height: auto;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+}
+.auth-modal .oauth-google > div { width: 100% !important; }
+
 /* Centered content container inside modal */
 .modal-content {
   width: 50%;
@@ -383,3 +393,14 @@
 @media (prefers-color-scheme: dark) {
   .landing-logo { filter: none; }
 }
+
+/* Override Google button container on landing to avoid double-styling */
+.landing .oauth-google {
+  height: auto;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  display: block;
+}
+.landing .oauth-google > div { width: 100% !important; }

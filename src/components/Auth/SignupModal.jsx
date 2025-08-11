@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import '../../app/login/login.css';
+import GoogleSignIn from './GoogleSignIn';
 
 export default function SignupModal({ onClose }) {
   const router = useRouter();
@@ -21,7 +22,7 @@ export default function SignupModal({ onClose }) {
           <h1 className="modal-title">Join X today</h1>
 
           <div className="oauth-row">
-            <div className="oauth-google">Google one-tap (placeholder)</div>
+            <GoogleSignIn />
           </div>
 
           <button className="oauth-apple" type="button"> Sign up with Apple</button>

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import './login/login.css';
 import AuthModal from '../components/Auth/AuthModal';
+import GoogleSignIn from '../components/Auth/GoogleSignIn';
 
 export default function Home() {
   const [showLogin, setShowLogin] = useState(false);
@@ -19,16 +20,15 @@ export default function Home() {
         <div className="landing-subtitle">Join today.</div>
 
         <div className="landing-body">
-          {/* Placeholder Google one-tap row */}
           <div className="oauth-row">
-            <div className="oauth-google">Google one-tap (placeholder)</div>
+            <GoogleSignIn />
           </div>
 
           <button className="oauth-apple" type="button"> Sign up with Apple</button>
 
           <div className="divider"><span>OR</span></div>
 
-          <a className="primary-btn btn-link" href="/signup">Create account</a>
+          <a className="primary-btn btn-link" href="/flow/signup">Create account</a>
 
           <div className="landing-already">Already have an account?</div>
           <button className="secondary-btn btn-link" onClick={() => setShowLogin(true)}>Sign in</button>

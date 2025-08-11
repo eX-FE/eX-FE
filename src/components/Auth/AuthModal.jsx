@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useUser } from '../../context/UserContext';
 import '../../app/login/login.css';
+import GoogleSignIn from './GoogleSignIn';
 
 export default function AuthModal({ onClose }) {
   const router = useRouter();
@@ -46,7 +47,7 @@ export default function AuthModal({ onClose }) {
           <h1 className="modal-title">Sign in to X</h1>
 
           <div className="oauth-row">
-            <div className="oauth-google">Google one-tap (placeholder)</div>
+            <GoogleSignIn />
           </div>
 
           <button className="oauth-apple" type="button"> Sign in with Apple</button>
@@ -82,7 +83,7 @@ export default function AuthModal({ onClose }) {
             </button>
           </form>
 
-          <button className="secondary-btn" type="button" onClick={() => router.push('/login/forgot')}>
+          <button className="secondary-btn" type="button" onClick={() => router.push('/flow/password_reset')}>
             Forgot password?
           </button>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { fetchMe, loginUser, logoutUser, registerUser } from '../utils/api';
+import { fetchMe, loginUser, logoutUser, registerUser, loginWithGoogleIdToken } from '../utils/api';
 
 export const UserContext = createContext(null);
 
@@ -45,6 +45,14 @@ export function UserProvider({ children }) {
     return data.user;
   }
 
+  async function handleGoogleLogin(idToken) {
+    setError(null);
+    const data = await loginWithGoogleIdToken(idToken);
+    localStorage.setItem('access_token', data.token);
+    setUser(data.user);
+    return data.user;
+  }
+
   async function handleLogout() {
     try {
       await logoutUser();
@@ -54,7 +62,10 @@ export function UserProvider({ children }) {
     }
   }
 
-  const value = useMemo(() => ({ user, isLoading, error, register: handleRegister, login: handleLogin, logout: handleLogout }), [user, isLoading, error]);
+  const value = useMemo(
+    () => ({ user, isLoading, error, register: handleRegister, login: handleLogin, loginWithGoogle: handleGoogleLogin, logout: handleLogout }),
+    [user, isLoading, error]
+  );
 
   return (
     <UserContext.Provider value={value}>
