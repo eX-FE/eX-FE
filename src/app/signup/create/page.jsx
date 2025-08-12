@@ -4,111 +4,74 @@ import { useState } from "react";
 import '../../login/login.css';
 import { useRouter } from 'next/navigation';
 import { useUser } from '../../../context/UserContext';
+import Image from 'next/image';
 
 export default function CreateAccountPage() {
   const router = useRouter();
   const { register, isLoading } = useUser();
-  const [formData, setFormData] = useState({
-    name: '',
-    username: '',
-    email: '',
-    password: ''
-  });
-  const [error, setError] = useState(null);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const isDisabled = !username || (password?.length || 0) < 8;
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
-    setError(null);
+    if (isDisabled) return;
     try {
-      await register(formData);
+      // Minimal data to complete registration; name/email can be refined later in profile
+      const name = username;
+      const email = `${username}@example.com`;
+      await register({ name, username, email, password });
       router.push('/profile');
     } catch (err) {
-      setError(err.message || 'Sign up failed');
+      // no-op for now
     }
-  };
+  }
 
   return (
-    <div className="login-page">
-      <div className="login-container">
-        <div className="login-header">
-          <h1 className="login-title">Create your account</h1>
-          <p className="login-subtitle">Join eX to start posting.</p>
-        </div>
-
-        <form className="login-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="name" className="form-label">Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              className="form-input"
-              placeholder="What should we call you?"
-              required
-            />
+    <div className="auth-overlay">
+      <div className="auth-modal">
+        <div className="modal-content create-flow" style={{ width: '75%' }}>
+          <div className="modal-logo" aria-hidden>
+            <Image className="modal-logo-light" src="/x-logo.svg" alt="X" width={28} height={28} priority />
+            <Image className="modal-logo-dark" src="/x-logo-white.png" alt="X" width={28} height={28} priority />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="username" className="form-label">Username</label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleInputChange}
-              className="form-input"
-              placeholder="Choose a unique username"
-              required
-            />
-          </div>
+          <h1 className="modal-title" style={{ textAlign: 'left' }}>What should we call you?</h1>
+          <p className="legal-text" style={{ marginTop: 0, marginBottom: 10 }}>Your @username is unique. You can always change it later.</p>
 
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className="form-input"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="login-form" style={{ gap: 16 }}>
+            <div className="form-group">
+              <input
+                className="modal-input"
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="password" className="form-label">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              className="form-input"
-              placeholder="Create a strong password"
-              required
-            />
-          </div>
+            <h2 className="section-title" style={{ fontSize: 24, marginTop: 8 }}>You'll need a password</h2>
+            <p className="legal-text" style={{ marginTop: -6, marginBottom: 6 }}>Make sure it's 8 characters or more.</p>
 
-          {error && <div className="error-text">{error}</div>}
+            <div className="form-group">
+              <input
+                className="modal-input"
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
 
-          <button type="submit" className="login-button" disabled={isLoading}>
-            {isLoading ? 'Signing up...' : 'Create account'}
-          </button>
-        </form>
+            <p className="legal-text" style={{ marginTop: 6 }}>
+              By signing up, you agree to the <a className="link" href="#">Terms of Service</a> and <a className="link" href="#">Privacy Policy</a>, including <a className="link" href="#">Cookie Use</a>.
+            </p>
 
-        <div className="login-footer">
-          <p className="signup-text">
-            Already have an account?
-            <a href="/login" className="signup-link"> Sign in</a>
-          </p>
+            <button className="primary-btn" type="submit" disabled={isDisabled || isLoading}>
+              {isLoading ? 'Signing up...' : 'Sign up'}
+            </button>
+          </form>
         </div>
       </div>
     </div>

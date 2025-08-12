@@ -166,27 +166,34 @@
   box-shadow: 0 10px 40px rgba(0,0,0,0.2);
 }
 
+/* Close button: plain larger X (no circle) */
 .modal-close {
   position: absolute;
-  top: 14px;
-  left: 14px;
-  width: 32px;
-  height: 32px;
-  border-radius: 9999px;
-  border: 1px solid #ddd;
-  background: #fff;
+  top: 12px;
+  left: 12px;
+  background: transparent;
+  border: none;
+  width: auto;
+  height: auto;
+  border-radius: 0;
   cursor: pointer;
-  font-size: 18px;
-  line-height: 30px;
+  font-size: 26px;
+  line-height: 1;
+  color: #0f1419;
+}
+@media (prefers-color-scheme: dark) {
+  .modal-close {
+    color: #e7e9ea;
+  }
 }
 
-.modal-logo {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: 800;
-  font-size: 28px;
-  margin-top: 8px;
+/* Modal logo light/dark (ensure visible) */
+.modal-logo { margin-top: 4px; display: flex; align-items: center; justify-content: center; }
+.modal-logo-light { display: block; filter: none; }
+.modal-logo-dark { display: none; }
+@media (prefers-color-scheme: dark) {
+  .modal-logo-light { display: none; }
+  .modal-logo-dark { display: block; }
 }
 
 .modal-title {
@@ -390,8 +397,12 @@
 .landing-logo { max-width: 80%; height: auto; }
 @media (max-width: 900px) { .landing-logo { max-width: 60%; } }
 
+/***** Ensure visibility *****/
+/* Light mode: invert white PNG to appear black */
+.landing-logo-light { filter: invert(1) brightness(0); }
+/* Dark mode rule already shows the white asset without filter */
 @media (prefers-color-scheme: dark) {
-  .landing-logo { filter: none; }
+  .landing-logo-light { filter: none; }
 }
 
 /* Override Google button container on landing to avoid double-styling */
@@ -404,3 +415,46 @@
   display: block;
 }
 .landing .oauth-google > div { width: 100% !important; }
+
+/* Signup flow specific tweaks */
+.signup-flow .modal-input {
+  border-radius: 6px;
+}
+
+/* Create account flow input radius */
+.create-flow .modal-input {
+  border-radius: 6px;
+}
+
+.signup-flow .form-group { margin: 22px 0; }
+.signup-flow .section-block { margin-top: 16px; margin-bottom: 60px; }
+.signup-flow .section-title { font-weight: 700; margin-bottom: 6px; }
+
+.inline-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+.signup-flow .primary-btn:disabled {
+  background: #9ca3af; /* gray */
+  cursor: not-allowed;
+}
+
+/* Make the signup flow content take 3/4 of modal width */
+.signup-flow { width: 75%; }
+@media (max-width: 640px) {
+  .signup-flow { width: 100%; }
+}
+
+/* Overlay: lighter with blur so background remains visible */
+.auth-overlay {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+}
+@media (prefers-color-scheme: dark) {
+  .auth-overlay {
+    background: rgba(21, 32, 43, 0.3);
+  }
+}
+
+/* Signup flow spacing tweaks */
+.signup-flow .form-group { margin: 22px 0; }
+.inline-row { margin-top: 10px; }
+.signup-flow .section-subtext { font-size: 14px; }

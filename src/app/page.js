@@ -12,7 +12,8 @@ export default function Home() {
   return (
     <div className="landing">
       <div className="landing-left">
-        <Image className="landing-logo landing-logo-light" src="/x-logo.svg" alt="X" width={320} height={320} priority />
+        {/* Use white PNG for both; light mode will invert to black via CSS */}
+        <Image className="landing-logo landing-logo-light" src="/x-logo-white.png" alt="X" width={320} height={320} priority />
         <Image className="landing-logo landing-logo-dark" src="/x-logo-white.png" alt="X" width={320} height={320} priority />
       </div>
       <div className="landing-right">
