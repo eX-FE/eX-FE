@@ -13,7 +13,7 @@ export default function Home() {
     <div className="landing">
       <div className="landing-left">
         {/* Use white PNG for both; light mode will invert to black via CSS */}
-        <Image className="landing-logo landing-logo-light" src="/x-logo-white.png" alt="X" width={320} height={320} priority />
+        <Image className="landing-logo landing-logo-light" src="/x-logo-white.png" alt="X" width={288} height={288} priority />
         <Image className="landing-logo landing-logo-dark" src="/x-logo-white.png" alt="X" width={320} height={320} priority />
       </div>
       <div className="landing-right">
@@ -29,7 +29,7 @@ export default function Home() {
 
           <div className="divider"><span>OR</span></div>
 
-          <a className="primary-btn btn-link" href="/flow/signup">Create account</a>
+          <a className="primary-btn btn-link" href="/signup">Create account</a>
 
           <div className="landing-already">Already have an account?</div>
           <button className="secondary-btn btn-link" onClick={() => setShowLogin(true)}>Sign in</button>
