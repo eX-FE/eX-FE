@@ -5,7 +5,7 @@ const { apiLimiter } = require('./middleware/rateLimit');
 const authRoutes = require('./routes/authRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5050;
 
 // Basic CORS (adjust origins as needed)
 app.use((req, res, next) => {
