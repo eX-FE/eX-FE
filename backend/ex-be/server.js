@@ -64,20 +64,25 @@ app.get('/tweets', (req, res) => {
 
 // Auth routes
 app.post('/auth/register', (req, res) => {
-  const { name, username, email, password } = req.body || {};
+  let { name, username, email, password } = req.body || {};
   if (!name || !username || !email || !password) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
-  const emailExists = users.some(u => u.email.toLowerCase() === email.toLowerCase());
-  const usernameExists = users.some(u => u.username.toLowerCase() === username.toLowerCase());
+  // Normalize inputs to avoid trailing/leading space issues
+  name = name.toString().trim();
+  const usernameNorm = username.toString().trim();
+  const emailNorm = email.toString().trim();
+
+  const emailExists = users.some(u => u.email.toLowerCase() === emailNorm.toLowerCase());
+  const usernameExists = users.some(u => u.username.toLowerCase() === usernameNorm.toLowerCase());
   if (emailExists) return res.status(409).json({ error: 'Email already in use' });
   if (usernameExists) return res.status(409).json({ error: 'Username already in use' });
 
   const newUser = {
     id: nextUserId++,
     name,
-    username,
-    email,
+    username: usernameNorm,
+    email: emailNorm,
     password, // NOTE: Plain text for demo. Do NOT do this in production.
     joinDate: new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' }),
     followers: 0,

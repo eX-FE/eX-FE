@@ -36,8 +36,8 @@ export default function CreateAccountPage() {
         return;
       }
       const cleanUsername = username.trim();
-      const safeName = name?.trim() || cleanUsername;
-      const safeEmail = email?.trim() || `${cleanUsername}@example.com`;
+      const safeName = (name || '').trim() || cleanUsername;
+      const safeEmail = (email || '').trim();
       await register({ name: safeName, username: cleanUsername, email: safeEmail, password });
       reset();
       router.push('/profile');
