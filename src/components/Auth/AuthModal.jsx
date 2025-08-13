@@ -61,7 +61,7 @@ export default function AuthModal({ onClose }) {
               className="modal-input"
               type="text"
               name="identifier"
-              placeholder="Phone, email, or username"
+              placeholder="Email, or username"
               value={formData.identifier}
               onChange={handleInputChange}
               required

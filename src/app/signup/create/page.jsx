@@ -1,31 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import '../../login/login.css';
 import { useRouter } from 'next/navigation';
 import { useUser } from '../../../context/UserContext';
+import { useSignup } from '../../../context/SignupContext';
 import Image from 'next/image';
 
 export default function CreateAccountPage() {
   const router = useRouter();
   const { register, isLoading } = useUser();
+  const { name, email, reset } = useSignup();
 
   // Store username WITHOUT '@' and render a visual gray prefix instead
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-
-  useEffect(() => {
-    try {
-      const n = sessionStorage.getItem('signup_name') || '';
-      const e = sessionStorage.getItem('signup_email') || '';
-      setName(n);
-      setEmail(e);
-    } catch {}
-  }, []);
 
   const isDisabled = !(username && username.trim().length > 0) || (password?.length || 0) < 8;
 
@@ -48,6 +39,7 @@ export default function CreateAccountPage() {
       const safeName = name?.trim() || cleanUsername;
       const safeEmail = email?.trim() || `${cleanUsername}@example.com`;
       await register({ name: safeName, username: cleanUsername, email: safeEmail, password });
+      reset();
       router.push('/profile');
     } catch (err) {
       setError(err?.message || 'Sign up failed');
@@ -59,7 +51,7 @@ export default function CreateAccountPage() {
       <div className="auth-modal">
         <div className="modal-content create-flow" style={{ width: '75%' }}>
           <div className="modal-logo" aria-hidden>
-            <Image className="modal-logo-light" src="/x-logo-white.png" alt="X" width={26} height={26} priority />
+            <Image className="modal-logo-light" src="/x-logo-white.png" alt="X" width={28} height={28} priority />
             <Image className="modal-logo-dark" src="/x-logo-white.png" alt="X" width={28} height={28} priority />
           </div>
 
