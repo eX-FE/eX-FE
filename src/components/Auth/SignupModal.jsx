@@ -23,7 +23,7 @@ export default function SignupModal({ onClose }) {
           <h1 className="modal-title">Join X today</h1>
 
           <div className="oauth-row">
-            <GoogleSignIn />
+            <GoogleSignIn onSuccess={() => router.push('/profile')} />
           </div>
 
           <button className="oauth-apple" type="button"> Sign up with Apple</button>

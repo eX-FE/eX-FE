@@ -23,10 +23,9 @@ export default function RootLayout({ children, modal }) {
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable}`}>
         <UserProvider>
-          <AppShell>
+          <AppShell modal={modal}>
             {children}
           </AppShell>
-          {modal}
         </UserProvider>
       </body>
     </html>

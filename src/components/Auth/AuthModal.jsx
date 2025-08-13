@@ -47,7 +47,7 @@ export default function AuthModal({ onClose }) {
           <h1 className="modal-title">Sign in to X</h1>
 
           <div className="oauth-row">
-            <GoogleSignIn />
+            <GoogleSignIn onSuccess={() => router.push('/profile')} />
           </div>
 
           <button className="oauth-apple" type="button"> Sign in with Apple</button>

@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { useUser } from '../../context/UserContext';
 
-export default function GoogleSignIn() {
+export default function GoogleSignIn({ onSuccess }) {
   const { loginWithGoogle } = useUser();
   const btnRef = useRef(null);
 
@@ -42,6 +42,9 @@ export default function GoogleSignIn() {
           if (!response?.credential) return;
           try {
             await loginWithGoogle(response.credential);
+            if (onSuccess) {
+              onSuccess();
+            }
           } catch {}
         },
       });

@@ -71,3 +71,15 @@ export async function loginWithGoogleIdToken(idToken) {
   if (!res.ok) throw new Error(data.error || 'Google login failed');
   return data; // { token, user }
 }
+
+export async function updateProfile(payload) {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+  const res = await fetch(`${BACKEND_BASE_URL}/profile`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Update failed');
+  return data; // { user }
+}

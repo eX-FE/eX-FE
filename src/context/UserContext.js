@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { fetchMe, loginUser, logoutUser, registerUser, loginWithGoogleIdToken } from '../utils/api';
+import { fetchMe, loginUser, logoutUser, registerUser, loginWithGoogleIdToken, updateProfile as apiUpdateProfile } from '../utils/api';
 
 export const UserContext = createContext(null);
 
@@ -18,10 +18,30 @@ export function UserProvider({ children }) {
       try {
         setIsLoading(true);
         setError(null);
+        
+        // Check if we have a token first
+        const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+        console.log('[UserContext] Token check:', token ? 'exists' : 'missing');
+        
+        if (!token) {
+          console.log('[UserContext] No token found, setting user to null');
+          setUser(null);
+          setIsLoading(false);
+          return;
+        }
+
+        console.log('[UserContext] Fetching user data...');
         const data = await fetchMe();
+        console.log('[UserContext] User data received:', data.user);
         setUser(data.user);
       } catch (err) {
+        console.log('[UserContext] Error fetching user data:', err.message);
+        // If token is invalid, clear it from localStorage
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('access_token');
+        }
         setUser(null);
+        setError(err.message);
       } finally {
         setIsLoading(false);
       }
@@ -62,8 +82,34 @@ export function UserProvider({ children }) {
     }
   }
 
+  async function handleUpdateProfile(partial) {
+    setError(null);
+    const data = await apiUpdateProfile(partial);
+    setUser(data.user);
+    return data.user;
+  }
+
+  // Helper function to clear all auth state (useful for debugging)
+  function clearAuthState() {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('access_token');
+    }
+    setUser(null);
+    setError(null);
+  }
+
   const value = useMemo(
-    () => ({ user, isLoading, error, register: handleRegister, login: handleLogin, loginWithGoogle: handleGoogleLogin, logout: handleLogout }),
+    () => ({ 
+      user, 
+      isLoading, 
+      error, 
+      register: handleRegister, 
+      login: handleLogin, 
+      loginWithGoogle: handleGoogleLogin, 
+      logout: handleLogout,
+      updateProfile: handleUpdateProfile,
+      clearAuthState
+    }),
     [user, isLoading, error]
   );
 

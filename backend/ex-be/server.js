@@ -18,7 +18,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json());
+app.use(express.json({ limit: '5mb' }));
 app.use(cookieParser());
 app.use(apiLimiter);
 
@@ -90,6 +90,8 @@ app.post('/auth/register', (req, res) => {
     posts: 0,
     avatarUrl: '',
     bannerUrl: '',
+    bio: '',
+    location: '',
   };
   users.push(newUser);
 
@@ -147,6 +149,8 @@ app.post('/auth/google', async (req, res) => {
         posts: 0,
         avatarUrl: payload.picture || '',
         bannerUrl: '',
+        bio: '',
+        location: '',
       };
       users.push(user);
     }
@@ -168,6 +172,19 @@ app.get('/auth/me', (req, res) => {
 
 app.post('/auth/logout', (req, res) => {
   return res.status(204).send();
+});
+
+// Update profile
+app.patch('/profile', (req, res) => {
+  const user = getUserFromAuthHeader(req);
+  if (!user) return res.status(401).json({ error: 'Unauthorized' });
+  const { avatarUrl, bannerUrl, bio, location } = req.body || {};
+  if (typeof avatarUrl === 'string') user.avatarUrl = avatarUrl;
+  if (typeof bannerUrl === 'string') user.bannerUrl = bannerUrl;
+  if (typeof bio === 'string') user.bio = bio;
+  if (typeof location === 'string') user.location = location;
+  const { password: _, ...safeUser } = user;
+  return res.json({ user: safeUser });
 });
 
 // Fallback

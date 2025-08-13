@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import './login/login.css';
 import AuthModal from '../components/Auth/AuthModal';
 import GoogleSignIn from '../components/Auth/GoogleSignIn';
 
 export default function Home() {
+  const router = useRouter();
   const [showLogin, setShowLogin] = useState(false);
 
   return (
@@ -22,7 +24,7 @@ export default function Home() {
 
         <div className="landing-body">
           <div className="oauth-row">
-            <GoogleSignIn />
+            <GoogleSignIn onSuccess={() => router.push('/profile')} />
           </div>
 
           <button className="oauth-apple" type="button"> Sign up with Apple</button>

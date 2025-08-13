@@ -22,7 +22,22 @@ export default function ProfilePage() {
     }
   }, [isLoading, user, router]);
 
-  if (isLoading || !user) {
+  if (isLoading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '50vh',
+        fontSize: '16px',
+        color: '#666'
+      }}>
+        Loading...
+      </div>
+    );
+  }
+
+  if (!user) {
     return null;
   }
 
@@ -45,6 +60,8 @@ export default function ProfilePage() {
         name={user.name} 
         username={user.username} 
         joinDate={user.joinDate} 
+        bio={user.bio}
+        location={user.location}
       />
 
       <FollowStats 

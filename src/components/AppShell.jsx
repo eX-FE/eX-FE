@@ -1,12 +1,27 @@
 'use client';
 
 import { useUser } from '../context/UserContext';
+import { usePathname } from 'next/navigation';
 import Sidebar from './Sidebar';
 
 export default function AppShell({ children, modal }) {
   const { user } = useUser();
+  const pathname = usePathname();
 
-  if (!user) {
+  // Routes that should never have sidebar (auth routes and main page)
+  const routesWithoutSidebar = [
+    '/',
+    '/login', 
+    '/signup',
+    '/signup/details',
+    '/signup/create',
+    '/setup_profile',
+    '/logout'
+  ];
+
+  const shouldShowSidebar = user && !routesWithoutSidebar.includes(pathname);
+
+  if (!shouldShowSidebar) {
     return <>{children}{modal}</>;
   }
 
