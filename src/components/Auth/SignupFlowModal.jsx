@@ -4,15 +4,15 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import '../../app/login/login.css';
+import { useSignup } from '../../context/SignupContext';
 
 export default function SignupFlowModal({ onClose }) {
   const router = useRouter();
+  const { name, setName, email, setEmail, dob, setDob } = useSignup();
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [month, setMonth] = useState('');
-  const [day, setDay] = useState('');
-  const [year, setYear] = useState('');
+  const [month, setMonthLocal] = useState(dob.month || '');
+  const [day, setDayLocal] = useState(dob.day || '');
+  const [year, setYearLocal] = useState(dob.year || '');
 
   function handleClose() {
     if (onClose) onClose();
@@ -27,6 +27,11 @@ export default function SignupFlowModal({ onClose }) {
   const days = Array.from({ length: 31 }, (_, i) => String(i + 1));
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 120 }, (_, i) => String(currentYear - i));
+
+  function handleNext() {
+    setDob({ month, day, year });
+    router.push('/signup/create');
+  }
 
   return (
     <div className="auth-overlay">
@@ -66,22 +71,22 @@ export default function SignupFlowModal({ onClose }) {
               This will not be shown publicly. Confirm your own age, even if this account is for a business, a pet, or something else.
             </div>
             <div className="inline-row">
-              <select className="modal-input" value={month} onChange={(e) => setMonth(e.target.value)}>
+              <select className="modal-input" value={month} onChange={(e) => setMonthLocal(e.target.value)}>
                 <option value="">Month</option>
                 {months.map(m => <option key={m} value={m}>{m}</option>)}
               </select>
-              <select className="modal-input" value={day} onChange={(e) => setDay(e.target.value)}>
+              <select className="modal-input" value={day} onChange={(e) => setDayLocal(e.target.value)}>
                 <option value="">Day</option>
                 {days.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
-              <select className="modal-input" value={year} onChange={(e) => setYear(e.target.value)}>
+              <select className="modal-input" value={year} onChange={(e) => setYearLocal(e.target.value)}>
                 <option value="">Year</option>
                 {years.map(y => <option key={y} value={y}>{y}</option>)}
               </select>
             </div>
           </div>
 
-          <button className="primary-btn" type="button" disabled={isDisabled} onClick={() => router.push('/signup/create')}>
+          <button className="primary-btn" type="button" disabled={isDisabled} onClick={handleNext}>
             Next
           </button>
         </div>
