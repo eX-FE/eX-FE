@@ -51,7 +51,7 @@ export default function CreateAccountPage() {
       <div className="auth-modal">
         <div className="modal-content create-flow" style={{ width: '75%' }}>
           <div className="modal-logo" aria-hidden>
-            <Image className="modal-logo-light" src="/x-logo-white.png" alt="X" width={28} height={28} priority />
+            <Image className="modal-logo-light" src="/x-logo-white.png" alt="X" width={26} height={26} priority />
             <Image className="modal-logo-dark" src="/x-logo-white.png" alt="X" width={28} height={28} priority />
           </div>
 

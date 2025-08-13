@@ -39,7 +39,7 @@ export default function SignupFlowModal({ onClose }) {
         <button aria-label="Close" className="modal-close" onClick={handleClose}>×</button>
         <div className="modal-content signup-flow">
           <div className="modal-logo" aria-hidden>
-            <Image className="modal-logo-light" src="/x-logo-white.png" alt="X" width={28} height={28} priority />
+            <Image className="modal-logo-light" src="/x-logo-white.png" alt="X" width={26} height={26} priority />
             <Image className="modal-logo-dark" src="/x-logo-white.png" alt="X" width={28} height={28} priority />
           </div>
           <h1 className="modal-title" style={{ textAlign: 'left' }}>Create your account</h1>
