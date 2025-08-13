@@ -17,3 +17,17 @@ Get Profile by username: curl http://localhost:5000/users/ab
 Delete own Profile: curl -X DELETE http://localhost:5000/users/me -H "Authorization: Bearer PASTE_ACCESS_TOKEN"
 
 
+#Follow Routes (register 2 users to test )
+1. Register user A and user B
+curl -X POST http://localhost:5000/auth/register -H "Content-Type: application/json" -d '{"email":"a@b.com","password":"Test123!","username":"ab"}'
+curl -X POST http://localhost:5000/auth/register -H "Content-Type: application/json" -d '{"email":"c@d.com","password":"Test123!","username":"cd"}'
+
+2. Login as user A 
+curl -X POST http://localhost:5000/auth/login -H "Content-Type: application/json" -d '{"email":"a@b.com","password":"Test123!"}'
+
+3.Follow user B
+curl -X POST http://localhost:5000/follows/cd -H "Authorization: Bearer PASTE_ACCESS_TOKEN"
+
+Get person B's followers: curl http://localhost:5000/follows/cd/followers
+Get who person A follows: curl http://localhost:5000/follows/ab/following
+Person A unfollow person B: curl -X DELETE http://localhost:5000/follows/cd -H "Authorization: Bearer PASTE_ACCESS_TOKEN"

@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const { apiLimiter } = require('./middleware/rateLimit');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
+const followRoutes = require('./routes/followRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5050;
@@ -34,7 +35,8 @@ app.get('/tweets', (req, res) => {
 
 // Auth routes
 app.use('/auth', authRoutes);
-app.use('/users', userRoutes); // mount users routes
+app.use('/users', userRoutes);
+app.use('/follows', followRoutes); // mount follows routes
 
 // Fallback
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
