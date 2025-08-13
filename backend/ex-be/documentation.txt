@@ -7,3 +7,13 @@ Get Refresh token: curl -i -X POST http://localhost:5000/auth/login \
   -d '{"email":"a@b.com","password":"Test123!"}'
 Refresh: curl -X POST http://localhost:5000/auth/refresh --cookie "refresh_token=PASTE_REFRESH_COOKIE_VALUE"
 
+
+#Profile Routes 
+curl http://localhost:5000/users/me -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhNmNhYTgzNy04NDBlLTRlZjYtYTIzNi0zZTZiZDIyYjQ3NzIiLCJpYXQiOjE3NTUwNzY5NjMsImV4cCI6MTc1NTA3Nzg2M30.bHvwiDaYFEGdm04UsbzpLWTeWlGzSP4NqRAgcGOaPU4"
+
+Get Profile: curl http://localhost:5000/users/me -H "Authorization: Bearer PASTE_ACCESS_TOKEN"
+Update Profile: curl -X PATCH http://localhost:5000/users/me -H "Authorization: Bearer PASTE_ACCESS_TOKEN" -H "Content-Type: application/json" -d '{"bio":"Hello world","displayName":"AB","location":"NYC"}'
+Get Profile by username: curl http://localhost:5000/users/ab
+Delete own Profile: curl -X DELETE http://localhost:5000/users/me -H "Authorization: Bearer PASTE_ACCESS_TOKEN"
+
+
