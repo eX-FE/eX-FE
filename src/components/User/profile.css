@@ -1,0 +1,145 @@
+/* Banner */
+.profile-banner {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background-color: #ccc;
+}
+
+.banner-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Avatar */
+.avatar-wrapper {
+  position: absolute;
+  bottom: -66px; /* Half the avatar height */
+  left: 16px;
+  z-index: 2;
+}
+
+.avatar {
+  width: 133px;
+  height: 133px;
+  border-radius: 50%;
+  border: 4px solid white;
+  object-fit: cover;
+}
+
+/* Wrapper for avatar to position relative to banner */
+.avatar-positioning {
+  position: relative;
+  height: 0;
+}
+
+/* Edit profile button */
+.edit-button-container {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 16px;
+  margin-top: 60px; /* pushes below avatar */
+}
+
+.edit-profile-button {
+  padding: 6px 16px;
+  border: 1px solid #ccc;
+  border-radius: 9999px;
+  background: white;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* User Info */
+.user-info {
+  padding: 12px 16px;
+}
+
+.display-name {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.username {
+  color: gray;
+  margin: 4px 0;
+}
+
+.join-date {
+  color: gray;
+  font-size: 14px;
+}
+
+/* Follow Stats */
+.follow-stats {
+  display: flex;
+  gap: 16px;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.stat {
+  color: #555;
+}
+
+.stat strong {
+  color: #000;
+}
+
+/* Tabs */
+.profile-tabs {
+  display: flex;
+  justify-content: space-around;
+  border-bottom: 1px solid #ccc;
+  margin-top: 12px;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 12px;
+  background: none;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  color: #555;
+  border-bottom: 2px solid transparent;
+}
+
+.tab-button.active {
+  color: #000;
+  border-bottom: 2px solid #000;
+}
+
+/* Header */
+.profile-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #ccc;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  margin-right: 16px;
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-name {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.post-count {
+  font-size: 14px;
+  color: gray;
+}

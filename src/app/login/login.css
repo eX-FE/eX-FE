@@ -1,0 +1,484 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  padding: 20px;
+}
+
+.login-container { 
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.login-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 0 8px 0;
+  color: #000;
+}
+
+.login-subtitle {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-weight: 500;
+  font-size: 14px;
+  color: #333;
+}
+
+.form-input {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #000;
+}
+
+.form-input::placeholder {
+  color: #999;
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.checkbox {
+  margin: 0;
+}
+
+.checkbox-text {
+  font-size: 14px;
+  color: #555;
+}
+
+.forgot-password {
+  font-size: 14px;
+  color: #000;
+  text-decoration: none;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+.login-button {
+  padding: 12px;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.login-button:hover {
+  background-color: #333;
+}
+
+.error-text {
+  color: #c0392b;
+  font-size: 14px;
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.signup-text {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.signup-link {
+  color: #000;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}
+
+/* X-like modal overlay */
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 1000;
+}
+
+.auth-modal {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px 24px 16px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: transparent;
+  border: none;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  cursor: pointer;
+  font-size: 26px;
+  line-height: 1;
+  color: #0f1419;
+}
+@media (prefers-color-scheme: dark) {
+  .modal-close {
+    color: #e7e9ea;
+  }
+}
+
+/* Modal logo light/dark */
+.modal-logo { margin-top: 4px; display: flex; align-items: center; justify-content: center; }
+.modal-logo-light { display: block; filter: invert(1) brightness(0); }
+.modal-logo-dark { display: none; }
+@media (prefers-color-scheme: dark) {
+  .modal-logo-light { display: none; }
+  .modal-logo-dark { display: block; }
+}
+
+.modal-title {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 800;
+  margin: 12px 0 16px;
+}
+
+.oauth-row { margin: 12px 0; }
+.oauth-google {
+  height: 44px;
+  border-radius: 9999px;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  font-size: 14px;
+}
+
+.oauth-apple {
+  height: 44px;
+  border-radius: 9999px;
+  border: 1px solid #e5e7eb;
+  display: block;
+  width: 100%;
+  background: #fff;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 16px 0;
+  color: #6b7280;
+}
+.divider:before, .divider:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 45%;
+  height: 1px;
+  background: #e5e7eb;
+}
+.divider:before { left: 0; }
+.divider:after { right: 0; }
+
+.modal-form { display: flex; flex-direction: column; gap: 12px; }
+.modal-input {
+  width: 100%;
+  height: 56px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 0 14px;
+  font-size: 16px;
+}
+
+.primary-btn {
+  margin-top: 8px;
+  height: 44px;
+  width: 100%;
+  border-radius: 9999px;
+  border: none;
+  background: #0f1419;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.secondary-btn {
+  margin-top: 12px;
+  height: 44px;
+  width: 100%;
+  border-radius: 9999px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #0f1419;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.modal-footer {
+  text-align: left;
+  margin-top: 16px;
+  color: #6b7280;
+}
+
+.legal-text { color: #6b7280; font-size: 14px; margin-top: 12px; }
+
+.link { color: #1d9bf0; text-decoration: none; }
+
+/* Landing (home) X-like layout */
+.landing {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  padding: 24px;
+  column-gap: 40px;
+}
+.landing-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.landing-logo { height: auto; }
+.landing-logo-dark { display: none; }
+.landing-logo-light { display: block; }
+
+.landing-right { max-width: 620px; margin: 0 auto 0 0; }
+.landing-title { font-size: 80px; font-weight: 800; letter-spacing: -1.2px; margin-bottom: 16px; line-height: 1.05; white-space: nowrap; }
+.landing-subtitle { font-size: 42px; font-weight: 900; margin-bottom: 24px; }
+
+.landing-body { width: 66%; }
+
+.btn-link { display: block; text-align: center; text-decoration: none; line-height: 44px; }
+.landing-already { margin-top: 24px; font-weight: 700; }
+.landing .primary-btn { background: #1d9bf0; color: #fff; }
+.landing .primary-btn:hover { background: #1a8cd8; }
+
+/* Dark mode for landing to match X */
+@media (prefers-color-scheme: dark) {
+  .landing { background: #000; color: #e7e9ea; }
+  .landing-title, .landing-subtitle { color: #e7e9ea; }
+  .landing-left { color: #e7e9ea; }
+  .landing-logo-dark { display: block; }
+  .landing-logo-light { display: none; }
+
+  .landing .oauth-google { background: #fff; color: #0f1419; border-color: #2f3336; }
+  .landing .oauth-apple { background: #fff; color: #0f1419; border-color: #2f3336; }
+
+  .landing .divider { color: #8b98a5; }
+  .landing .divider:before, .landing .divider:after { background: #2f3336; }
+
+  .landing .primary-btn { background: #1d9bf0; color: #fff; }
+  .landing .primary-btn:hover { background: #1a8cd8; }
+
+  .landing .secondary-btn { background: transparent; color: #e7e9ea; border-color: #2f3336; }
+}
+
+@media (max-width: 1200px) {
+  .landing-title { font-size: 72px; }
+}
+@media (max-width: 1000px) {
+  .landing-title { font-size: 54px; }
+  .landing-subtitle { font-size: 28px; }
+  .landing-body { width: 100%; }
+  .landing { column-gap: 24px; }
+}
+
+@media (prefers-color-scheme: dark) {
+  .auth-modal { background: #000; color: #e7e9ea; }
+  .modal-close { background: #000; border-color: #2f3336; color: #e7e9ea; }
+  .modal-logo, .modal-title { color: #e7e9ea; }
+
+  .oauth-google { background: #fff; color: #0f1419; border-color: #2f3336; }
+  .oauth-apple { background: #fff; color: #0f1419; border-color: #2f3336; }
+
+  .modal-input { background: #000; border-color: #2f3336; color: #e7e9ea; }
+  .modal-input::placeholder { color: #8b98a5; }
+
+  .divider { color: #8b98a5; }
+  .divider:before, .divider:after { background: #2f3336; }
+
+  .primary-btn { background: #e7e9ea; color: #0f1419; }
+  .primary-btn:hover { background: #d7dbdc; }
+
+  .secondary-btn { background: transparent; color: #e7e9ea; border-color: #2f3336; }
+
+  .modal-footer, .legal-text { color: #8b98a5; }
+  .link { color: #1d9bf0; }
+}
+
+/* Dark mode: restore modal overlay color only */
+@media (prefers-color-scheme: dark) {
+  .auth-overlay { background: rgba(21, 32, 43, 0.6); backdrop-filter: blur(2px); }
+}
+
+.auth-modal .oauth-google {
+  height: auto;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+}
+.auth-modal .oauth-google > div { width: 100% !important; }
+
+/* Centered content container inside modal */
+.modal-content {
+  width: 50%;
+  margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+  .auth-modal { padding: 20px 16px; }
+  .modal-content { width: 100%; }
+}
+
+.landing-logo { max-width: 80%; height: auto; }
+@media (max-width: 900px) { .landing-logo { max-width: 60%; } }
+
+/* Light mode: invert white PNG to appear black */
+.landing-logo-light { filter: invert(1) brightness(0); }
+/* Dark mode rule already shows the white asset without filter */
+@media (prefers-color-scheme: dark) {
+  .landing-logo-light { filter: none; }
+}
+
+/* Override Google button container on landing to avoid double-styling */
+.landing .oauth-google {
+  height: auto;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  display: block;
+}
+.landing .oauth-google > div { width: 100% !important; }
+
+.signup-flow .modal-input {
+  border-radius: 6px;
+}
+
+.create-flow .modal-input {
+  border-radius: 6px;
+}
+
+.signup-flow .form-group { margin: 22px 0; }
+.signup-flow .section-block { margin-top: 16px; margin-bottom: 60px; }
+.signup-flow .section-title { font-weight: 700; margin-bottom: 6px; }
+
+.inline-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+.signup-flow .primary-btn:disabled {
+  background: #9ca3af; /* gray */
+  cursor: not-allowed;
+}
+
+.signup-flow { width: 75%; }
+@media (max-width: 640px) {
+  .signup-flow { width: 100%; }
+}
+
+.auth-overlay {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+@media (prefers-color-scheme: dark) {
+  .auth-overlay {
+    background: rgba(0, 0, 0, 0.5);
+  }
+}
+
+.signup-flow .form-group { margin: 22px 0; }
+.inline-row { margin-top: 10px; }
+.signup-flow .section-subtext { font-size: 14px; }
+
+.input-wrap { position: relative; }
+.input-prefix {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  pointer-events: none;
+}
+.modal-input.with-prefix { padding-left: 28px; }
+
+.input-suffix {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #6b7280;
+}
+.modal-input.with-suffix { padding-right: 34px; }
+
+.signup-first .form-group:first-of-type { margin-top: 10px; }
+.signup-first .form-group:nth-of-type(2) { margin-top: 0px; margin-bottom: 20px; }
+
+.inline-row select.modal-input {
+  display: block;
+  width: 100%;
+}
