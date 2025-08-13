@@ -482,3 +482,15 @@
   display: block;
   width: 100%;
 }
+
+/* Logout modal tweaks: smaller card, tighter spacing */
+.logout-overlay { background: rgba(107, 114, 128, 0.35); backdrop-filter: blur(2px); }
+.logout-modal { max-width: 420px; border-radius: 16px; }
+.logout-modal .modal-title { font-size: 22px; }
+.logout-modal .modal-content { padding-top: 12px; }
+
+@media (prefers-color-scheme: dark) {
+  /* Dark: slightly lighter gray overlay so modal stands out on near-black bg */
+  .logout-overlay { background: rgba(47, 51, 54, 0.6); }
+  .logout-modal { background: #0f1419; border: 1px solid #2f3336; }
+}

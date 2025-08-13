@@ -1,8 +1,15 @@
 'use client';
 
 import styles from './Sidebar.module.css';
+import { useState } from 'react';
+import { useUser } from '../context/UserContext';
+import { useRouter } from 'next/navigation';
 
 export default function Sidebar({ onNavigate, currentPage }) {
+  const { user } = useUser();
+  const router = useRouter();
+  const [showMenu, setShowMenu] = useState(false);
+
   const menuItems = [
     { name: 'Home', icon: 'home' },
     { name: 'Explore', icon: 'search' },
@@ -79,7 +86,7 @@ export default function Sidebar({ onNavigate, currentPage }) {
   return (
     <div className={styles.sidebar}>
       {/* Logo */}
-      <div className={styles.logo}>
+      <div className={styles.logo} onClick={() => onNavigate && onNavigate('Home')}>
         <svg viewBox="0 0 24 24" className={styles.logoIcon}>
           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="currentColor" />
         </svg>
@@ -91,7 +98,7 @@ export default function Sidebar({ onNavigate, currentPage }) {
           <button
             key={item.name}
             className={`${styles.navItem} ${currentPage === item.name ? styles.active : ''}`}
-            onClick={() => onNavigate(item.name)}
+            onClick={() => onNavigate && onNavigate(item.name)}
           >
             {getIcon(item.icon, currentPage === item.name)}
             <span className={styles.navText}>{item.name}</span>
@@ -107,18 +114,30 @@ export default function Sidebar({ onNavigate, currentPage }) {
       {/* User Profile */}
       <div className={styles.userProfile}>
         <div className={styles.userAvatar}>
-          <div className={styles.avatarPlaceholder}></div>
+          {user?.avatarUrl ? (
+            <img src={user.avatarUrl} alt="avatar" />
+          ) : (
+            <div className={styles.avatarPlaceholder}></div>
+          )}
         </div>
         <div className={styles.userInfo}>
-          <div className={styles.userName}>Yash Kalyani</div>
-          <div className={styles.userHandle}>@iyashkalyani</div>
+          <div className={styles.userName}>{user?.name || ''}</div>
+          <div className={styles.userHandle}>{user?.username ? `@${user.username}` : ''}</div>
         </div>
         <div className={styles.moreOptions}>
-          <svg viewBox="0 0 24 24" className={styles.moreIcon}>
-            <circle cx="5" cy="12" r="2" />
-            <circle cx="12" cy="12" r="2" />
-            <circle cx="19" cy="12" r="2" />
-          </svg>
+          <button className={styles.moreBtn} onClick={() => setShowMenu(v => !v)} aria-label="More">
+            <svg viewBox="0 0 24 24" className={styles.moreIcon}>
+              <circle cx="5" cy="12" r="2" />
+              <circle cx="12" cy="12" r="2" />
+              <circle cx="19" cy="12" r="2" />
+            </svg>
+          </button>
+          {showMenu && (
+            <div className={styles.userMenu} role="menu">
+              <button className={styles.userMenuItem} onClick={() => router.push('/login')}>Add an existing account</button>
+              <button className={styles.userMenuItem} onClick={() => router.push('/logout')}>Log out @{user?.username || ''}</button>
+            </div>
+          )}
         </div>
       </div>
     </div>

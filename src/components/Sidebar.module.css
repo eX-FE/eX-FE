@@ -124,6 +124,8 @@
   flex-shrink: 0;
 }
 
+.userAvatar img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+
 .avatarPlaceholder {
   width: 40px;
   height: 40px;
@@ -168,6 +170,47 @@
   fill: #536471;
 }
 
+/* User menu tooltip */
+.moreBtn {
+  background: transparent;
+  border: none;
+  padding: 6px;
+  border-radius: 9999px;
+  cursor: pointer;
+}
+
+.userMenu {
+  position: absolute;
+  bottom: 76px;
+  left: 16px;
+  background: #0f1419;
+  color: #e7e9ea;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  min-width: 260px;
+}
+
+.userMenuItem {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: inherit;
+  text-align: left;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.userMenuItem:hover {
+  background: rgba(239, 243, 244, 0.1);
+}
+
+/* Positioning context */
+.userProfile { position: relative; }
+
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
   .sidebar {
@@ -210,6 +253,8 @@
   .moreIcon {
     fill: #71767b;
   }
+
+  .userMenu { background: #0f1419; color: #e7e9ea; }
 }
 
 /* Responsive design */
