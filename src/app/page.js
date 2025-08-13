@@ -29,7 +29,7 @@ export default function Home() {
 
           <div className="divider"><span>OR</span></div>
 
-          <a className="primary-btn btn-link" href="/signup">Create account</a>
+          <a className="primary-btn btn-link" href="/signup/details">Create account</a>
 
           <div className="landing-already">Already have an account?</div>
           <button className="secondary-btn btn-link" onClick={() => setShowLogin(true)}>Sign in</button>

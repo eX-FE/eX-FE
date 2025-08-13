@@ -166,7 +166,6 @@
   box-shadow: 0 10px 40px rgba(0,0,0,0.2);
 }
 
-/* Close button: plain larger X (no circle) */
 .modal-close {
   position: absolute;
   top: 12px;
@@ -187,7 +186,7 @@
   }
 }
 
-/* Modal logo light/dark (ensure visible) */
+/* Modal logo light/dark */
 .modal-logo { margin-top: 4px; display: flex; align-items: center; justify-content: center; }
 .modal-logo-light { display: block; filter: invert(1) brightness(0); }
 .modal-logo-dark { display: none; }
@@ -312,8 +311,6 @@
 
 .btn-link { display: block; text-align: center; text-decoration: none; line-height: 44px; }
 .landing-already { margin-top: 24px; font-weight: 700; }
-
-/* Make Create account blue on landing (light mode too) */
 .landing .primary-btn { background: #1d9bf0; color: #fff; }
 .landing .primary-btn:hover { background: #1a8cd8; }
 
@@ -347,7 +344,6 @@
   .landing { column-gap: 24px; }
 }
 
-/* Dark mode: modal-specific styles to match X */
 @media (prefers-color-scheme: dark) {
   .auth-modal { background: #000; color: #e7e9ea; }
   .modal-close { background: #000; border-color: #2f3336; color: #e7e9ea; }
@@ -376,7 +372,6 @@
   .auth-overlay { background: rgba(21, 32, 43, 0.6); backdrop-filter: blur(2px); }
 }
 
-/* Override Google button container inside modals to avoid double-styling */
 .auth-modal .oauth-google {
   height: auto;
   border: none;
@@ -397,11 +392,9 @@
   .modal-content { width: 100%; }
 }
 
-/* Landing logo tweaks */
 .landing-logo { max-width: 80%; height: auto; }
 @media (max-width: 900px) { .landing-logo { max-width: 60%; } }
 
-/***** Ensure visibility *****/
 /* Light mode: invert white PNG to appear black */
 .landing-logo-light { filter: invert(1) brightness(0); }
 /* Dark mode rule already shows the white asset without filter */
@@ -420,12 +413,10 @@
 }
 .landing .oauth-google > div { width: 100% !important; }
 
-/* Signup flow specific tweaks */
 .signup-flow .modal-input {
   border-radius: 6px;
 }
 
-/* Create account flow input radius */
 .create-flow .modal-input {
   border-radius: 6px;
 }
@@ -441,13 +432,11 @@
   cursor: not-allowed;
 }
 
-/* Make the signup flow content take 3/4 of modal width */
 .signup-flow { width: 75%; }
 @media (max-width: 640px) {
   .signup-flow { width: 100%; }
 }
 
-/* Overlay: 50% black with slight blur for strong see-through */
 .auth-overlay {
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(2px);
@@ -458,12 +447,10 @@
   }
 }
 
-/* Signup flow spacing tweaks */
 .signup-flow .form-group { margin: 22px 0; }
 .inline-row { margin-top: 10px; }
 .signup-flow .section-subtext { font-size: 14px; }
 
-/* Input prefix/suffix wrappers */
 .input-wrap { position: relative; }
 .input-prefix {
   position: absolute;
@@ -488,12 +475,22 @@
 }
 .modal-input.with-suffix { padding-right: 34px; }
 
-/* Signup first-step specific spacing */
 .signup-first .form-group:first-of-type { margin-top: 10px; }
 .signup-first .form-group:nth-of-type(2) { margin-top: 0px; margin-bottom: 20px; }
 
-/* Ensure DOB selects render properly */
 .inline-row select.modal-input {
   display: block;
   width: 100%;
+}
+
+/* Logout modal tweaks: smaller card, tighter spacing */
+.logout-overlay { background: rgba(107, 114, 128, 0.35); backdrop-filter: blur(2px); }
+.logout-modal { max-width: 420px; border-radius: 16px; }
+.logout-modal .modal-title { font-size: 22px; }
+.logout-modal .modal-content { padding-top: 12px; }
+
+@media (prefers-color-scheme: dark) {
+  /* Dark: slightly lighter gray overlay so modal stands out on near-black bg */
+  .logout-overlay { background: rgba(47, 51, 54, 0.6); }
+  .logout-modal { background: #0f1419; border: 1px solid #2f3336; }
 }

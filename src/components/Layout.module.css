@@ -1,0 +1,25 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--background);
+}
+
+.mainContent {
+  flex: 1;
+  margin-left: 275px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .mainContent {
+    margin-left: 88px;
+  }
+}
+
+@media (max-width: 688px) {
+  .mainContent {
+    margin-left: 0;
+  }
+}

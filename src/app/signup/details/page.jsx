@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import SignupFlowModal from '../../../components/Auth/SignupFlowModal';
 
-export default function SignupFlowPage() {
+export default function SignupDetailsPage() {
   const router = useRouter();
   return <SignupFlowModal onClose={() => router.push('/')} />;
 } 

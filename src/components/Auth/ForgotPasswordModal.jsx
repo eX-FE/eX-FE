@@ -22,13 +22,13 @@ export default function ForgotPasswordModal({ onClose }) {
           </div>
           <h1 className="modal-title" style={{ textAlign: 'left' }}>Find your X account</h1>
           <p className="legal-text" style={{ marginTop: 0, marginBottom: 16 }}>
-            Enter the email, phone number, or username associated with your account to change your password.
+            Enter the email or username associated with your account to change your password.
           </p>
 
           <input
             className="modal-input"
             type="text"
-            placeholder="Email, phone number, or username"
+            placeholder="Email or username"
           />
 
           <button className="primary-btn" type="button" style={{ marginTop: 40 }} onClick={() => router.push('/login')}>
