@@ -83,3 +83,34 @@ export async function updateProfile(payload) {
   if (!res.ok) throw new Error(data.error || 'Update failed');
   return data; // { user }
 }
+
+export async function uploadAvatar(file) {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+  const form = new FormData();
+  form.append('file', file);
+  const res = await fetch(`${BACKEND_BASE_URL}/upload/avatar`, {
+    method: 'POST',
+    headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    body: form,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Avatar upload failed');
+  // Convert relative URL to absolute for Next Image/IMG usage
+  const url = data.url?.startsWith('http') ? data.url : `${BACKEND_BASE_URL}${data.url}`;
+  return { url };
+}
+
+export async function uploadBanner(file) {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+  const form = new FormData();
+  form.append('file', file);
+  const res = await fetch(`${BACKEND_BASE_URL}/upload/banner`, {
+    method: 'POST',
+    headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    body: form,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Banner upload failed');
+  const url = data.url?.startsWith('http') ? data.url : `${BACKEND_BASE_URL}${data.url}`;
+  return { url };
+}

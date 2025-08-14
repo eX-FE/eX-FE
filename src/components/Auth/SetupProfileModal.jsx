@@ -9,7 +9,7 @@ import ProfileStepShell from './ProfileStepShell';
 
 export default function SetupProfileModal({ onClose }) {
   const router = useRouter();
-  const { updateProfile } = useUser();
+  const { updateProfile, uploadAvatar: uploadAvatarApi, uploadBanner: uploadBannerApi } = useUser();
 
   // Steps: 0=avatar, 1=header, 2=bio, 3=location, 4=save
   const [step, setStep] = useState(0);
@@ -37,13 +37,22 @@ export default function SetupProfileModal({ onClose }) {
     reader.readAsDataURL(file);
   }
 
-  function onAvatarChange(e) {
+  async function onAvatarChange(e) {
     const file = e.target.files?.[0];
-    if (file) { setAvatarFile(file); readAsDataURL(file, setAvatarDataUrl); }
+    if (file) {
+      setAvatarFile(file);
+      readAsDataURL(file, setAvatarDataUrl);
+      // upload immediately to backend and update user
+      try { await uploadAvatarApi(file); } catch {}
+    }
   }
-  function onHeaderChange(e) {
+  async function onHeaderChange(e) {
     const file = e.target.files?.[0];
-    if (file) { setHeaderFile(file); readAsDataURL(file, setHeaderDataUrl); }
+    if (file) {
+      setHeaderFile(file);
+      readAsDataURL(file, setHeaderDataUrl);
+      try { await uploadBannerApi(file); } catch {}
+    }
   }
 
   function clearAvatar() { setAvatarFile(null); setAvatarDataUrl(''); if (avatarInputRef.current) avatarInputRef.current.value = ''; }
@@ -85,6 +94,7 @@ export default function SetupProfileModal({ onClose }) {
   async function handleSave() {
     try {
       const payload = {
+        // avatarUrl/bannerUrl already saved on upload; keep for data-url fallback cases
         avatarUrl: avatarDataUrl || undefined,
         bannerUrl: headerDataUrl || undefined,
         bio: (bio || '').trim() || undefined,

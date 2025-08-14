@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { fetchMe, loginUser, logoutUser, registerUser, loginWithGoogleIdToken, updateProfile as apiUpdateProfile } from '../utils/api';
+import { fetchMe, loginUser, logoutUser, registerUser, loginWithGoogleIdToken, updateProfile as apiUpdateProfile, uploadAvatar as apiUploadAvatar, uploadBanner as apiUploadBanner } from '../utils/api';
 
 export const UserContext = createContext(null);
 
@@ -89,6 +89,19 @@ export function UserProvider({ children }) {
     return data.user;
   }
 
+  async function uploadAvatar(file) {
+    const { url } = await apiUploadAvatar(file);
+    // Optimistically update avatar
+    const updated = await handleUpdateProfile({ avatarUrl: url });
+    return updated;
+  }
+
+  async function uploadBanner(file) {
+    const { url } = await apiUploadBanner(file);
+    const updated = await handleUpdateProfile({ bannerUrl: url });
+    return updated;
+  }
+
   // Helper function to clear all auth state (useful for debugging)
   function clearAuthState() {
     if (typeof window !== 'undefined') {
@@ -108,6 +121,8 @@ export function UserProvider({ children }) {
       loginWithGoogle: handleGoogleLogin, 
       logout: handleLogout,
       updateProfile: handleUpdateProfile,
+      uploadAvatar,
+      uploadBanner,
       clearAuthState
     }),
     [user, isLoading, error]

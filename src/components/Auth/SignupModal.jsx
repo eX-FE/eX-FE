@@ -30,7 +30,7 @@ export default function SignupModal({ onClose }) {
 
           <div className="divider"><span>or</span></div>
 
-          <a href="/signup/create" className="primary-btn" style={{ display: 'inline-block', textAlign: 'center', textDecoration: 'none', lineHeight: '44px' }}>
+          <a href="/signup/details" className="primary-btn" style={{ display: 'inline-block', textAlign: 'center', textDecoration: 'none', lineHeight: '44px' }}>
             Create account
           </a>
 

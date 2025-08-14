@@ -41,8 +41,8 @@ export default function ProfilePage() {
     return null;
   }
 
-  const bannerUrl = user.bannerUrl || 'https://sp-ao.shortpixel.ai/client/to_webp,q_glossy,ret_img,w_2400/https://blog.snappa.com/wp-content/uploads/2024/01/X-Header-Blog-Featured-Image.jpg';
-  const avatarUrl = user.avatarUrl || 'https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png';
+  const bannerUrl = user.bannerUrl || '';
+  const avatarUrl = user.avatarUrl || '';
 
   return (
     <div className="profile-page">

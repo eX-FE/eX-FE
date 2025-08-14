@@ -2,9 +2,11 @@ require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const { apiLimiter } = require('./middleware/rateLimit');
-const authRoutes = require('./routes/authRoutes');
 const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 5050;
@@ -51,6 +53,23 @@ function getUserFromAuthHeader(req) {
   }
 }
 
+// File uploads setup
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, uploadsDir),
+  filename: (_req, file, cb) => {
+    const ext = path.extname(file.originalname || '').toLowerCase();
+    const base = path.basename(file.originalname || 'file', ext).replace(/[^a-z0-9-_]/gi, '_');
+    cb(null, `${Date.now()}_${Math.random().toString(36).slice(2)}_${base}${ext}`);
+  }
+});
+const upload = multer({ storage });
+// Serve static files
+app.use('/uploads', express.static(uploadsDir));
+
 // Health
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
@@ -62,7 +81,8 @@ app.get('/tweets', (req, res) => {
   ]);
 });
 
-// Auth routes
+// Auth routes (implemented inline below)
+
 app.post('/auth/register', (req, res) => {
   let { name, username, email, password } = req.body || {};
   if (!name || !username || !email || !password) {
@@ -174,7 +194,7 @@ app.post('/auth/logout', (req, res) => {
   return res.status(204).send();
 });
 
-// Update profile
+// Update profile (metadata)
 app.patch('/profile', (req, res) => {
   const user = getUserFromAuthHeader(req);
   if (!user) return res.status(401).json({ error: 'Unauthorized' });
@@ -185,6 +205,29 @@ app.patch('/profile', (req, res) => {
   if (typeof location === 'string') user.location = location;
   const { password: _, ...safeUser } = user;
   return res.json({ user: safeUser });
+});
+
+// Upload endpoints (authenticated)
+app.post('/upload/avatar', upload.single('file'), (req, res) => {
+  const user = getUserFromAuthHeader(req);
+  if (!user) return res.status(401).json({ error: 'Unauthorized' });
+  if (!req.file) return res.status(400).json({ error: 'Missing file' });
+  if (!req.file.mimetype || !req.file.mimetype.startsWith('image/')) {
+    return res.status(400).json({ error: 'Only image files are allowed' });
+  }
+  const url = `/uploads/${req.file.filename}`;
+  return res.json({ url });
+});
+
+app.post('/upload/banner', upload.single('file'), (req, res) => {
+  const user = getUserFromAuthHeader(req);
+  if (!user) return res.status(401).json({ error: 'Unauthorized' });
+  if (!req.file) return res.status(400).json({ error: 'Missing file' });
+  if (!req.file.mimetype || !req.file.mimetype.startsWith('image/')) {
+    return res.status(400).json({ error: 'Only image files are allowed' });
+  }
+  const url = `/uploads/${req.file.filename}`;
+  return res.json({ url });
 });
 
 // Fallback
