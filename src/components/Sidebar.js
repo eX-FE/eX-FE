@@ -83,6 +83,8 @@ export default function Sidebar({ onNavigate, currentPage }) {
     }
   };
 
+  const hasAvatar = !!(user?.avatarUrl && user.avatarUrl.trim().length > 0);
+
   return (
     <div className={styles.sidebar}>
       {/* Logo */}
@@ -114,18 +116,22 @@ export default function Sidebar({ onNavigate, currentPage }) {
       {/* User Profile */}
       <div className={styles.userProfile}>
         <div className={styles.userAvatar}>
-          {user?.avatarUrl ? (
+          {hasAvatar ? (
             <img src={user.avatarUrl} alt="avatar" />
           ) : (
-            <div className={styles.avatarPlaceholder}></div>
+            <div className={styles.avatarPlaceholder}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#6b7280">
+                <path d="M12 2a5 5 0 100 10 5 5 0 000-10zm0 12c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5z" />
+              </svg>
+            </div>
           )}
         </div>
-        <div className={styles.userInfo}>
+        <div className={styles.userInfo} onClick={() => setShowMenu(v => !v)}>
           <div className={styles.userName}>{user?.name || ''}</div>
           <div className={styles.userHandle}>{user?.username ? `@${user.username}` : ''}</div>
         </div>
         <div className={styles.moreOptions}>
-          <button className={styles.moreBtn} onClick={() => setShowMenu(v => !v)} aria-label="More">
+          <button className={styles.moreBtn} onClick={(e) => { e.stopPropagation(); setShowMenu(v => !v); }} aria-label="More">
             <svg viewBox="0 0 24 24" className={styles.moreIcon}>
               <circle cx="5" cy="12" r="2" />
               <circle cx="12" cy="12" r="2" />

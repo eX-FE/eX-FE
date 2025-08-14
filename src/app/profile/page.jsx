@@ -22,12 +22,27 @@ export default function ProfilePage() {
     }
   }, [isLoading, user, router]);
 
-  if (isLoading || !user) {
+  if (isLoading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '50vh',
+        fontSize: '16px',
+        color: '#666'
+      }}>
+        Loading...
+      </div>
+    );
+  }
+
+  if (!user) {
     return null;
   }
 
-  const bannerUrl = user.bannerUrl || 'https://sp-ao.shortpixel.ai/client/to_webp,q_glossy,ret_img,w_2400/https://blog.snappa.com/wp-content/uploads/2024/01/X-Header-Blog-Featured-Image.jpg';
-  const avatarUrl = user.avatarUrl || 'https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png';
+  const bannerUrl = user.bannerUrl || '';
+  const avatarUrl = user.avatarUrl || '';
 
   return (
     <div className="profile-page">
@@ -45,6 +60,8 @@ export default function ProfilePage() {
         name={user.name} 
         username={user.username} 
         joinDate={user.joinDate} 
+        bio={user.bio}
+        location={user.location}
       />
 
       <FollowStats 
