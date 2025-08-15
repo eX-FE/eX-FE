@@ -1,10 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import styles from './ExplorePage.module.css';
+import { useRouter } from 'next/navigation';
+import { searchUsers } from '../utils/api';
 
 export default function ExplorePage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('For You');
+  const [query, setQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const [results, setResults] = useState([]);
+  const [showResults, setShowResults] = useState(false);
 
   const tabs = [
     'For You',
@@ -13,6 +20,40 @@ export default function ExplorePage() {
     'Sports',
     'Entertainment'
   ];
+
+  const performSearch = useCallback(async (q) => {
+    const t = (q || '').trim();
+    if (!t) {
+      setResults([]);
+      setShowResults(false);
+      return;
+    }
+    setIsSearching(true);
+    try {
+      const data = await searchUsers(t);
+      setResults(data.users || []);
+      setShowResults(true);
+    } catch {
+      setResults([]);
+      setShowResults(false);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const id = setTimeout(() => {
+      performSearch(query);
+    }, 300);
+    return () => clearTimeout(id);
+  }, [query, performSearch]);
+
+  const handleUserClick = (user) => {
+    router.push(`/profile/${user.username}?data=${encodeURIComponent(JSON.stringify(user))}`);
+    setQuery('');
+    setResults([]);
+    setShowResults(false);
+  };
 
   return (
     <div className={styles.container}>
@@ -28,6 +69,10 @@ export default function ExplorePage() {
             type="text"
             placeholder="Search"
             className={styles.searchInput}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setShowResults(results.length > 0)}
+            onBlur={() => setTimeout(() => setShowResults(false), 150)}
           />
         </div>
         <button className={styles.settingsBtn}>
@@ -36,6 +81,44 @@ export default function ExplorePage() {
           </svg>
         </button>
       </div>
+
+      {/* Inline Results Dropdown */}
+      {showResults && (
+        <div className={styles.searchResults}>
+          {isSearching ? (
+            <div className={styles.searchingIndicator}>
+              <div className={styles.searchingText}>Searching...</div>
+            </div>
+          ) : results.length > 0 ? (
+            <div className={styles.userResults}>
+              {results.map((u) => (
+                <div key={u.id} className={styles.userResult} onClick={() => handleUserClick(u)}>
+                  <div className={styles.userAvatar}>
+                    {u.avatarUrl ? (
+                      <img src={u.avatarUrl} alt={u.name} className={styles.avatarImage} />
+                    ) : (
+                      <div className={styles.avatarPlaceholder}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#888">
+                          <path d="M12 2a5 5 0 100 10 5 5 0 000-10zm0 12c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5z" />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                  <div className={styles.userInfo}>
+                    <div className={styles.userName}>{u.name}</div>
+                    <div className={styles.userUsername}>@{u.username}</div>
+                    {u.bio && <div className={styles.userBio}>{u.bio}</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className={styles.noResults}>
+              <p className={styles.noResultsText}>No results for "{query}"</p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Navigation Tabs */}
       <div className={styles.tabsContainer}>

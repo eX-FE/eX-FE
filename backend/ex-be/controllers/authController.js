@@ -61,6 +61,23 @@ function verifyEmail(req, res) {
   res.json({ message: 'Email verification stubbed', email });
 }
 
+async function googleLogin(req, res, next) {
+  try {
+    const { idToken } = req.body || {};
+    if (!idToken) return res.status(400).json({ error: 'Missing idToken' });
+    const { user, accessToken, refreshToken } = await authService.loginWithGoogle({ idToken });
+    res.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      path: '/auth'
+    });
+    return res.json({ user, accessToken });
+  } catch (e) {
+    next(e);
+  }
+}
+
 module.exports = {
   register,
   login,
@@ -68,5 +85,6 @@ module.exports = {
   refresh,
   logout,
   requestPasswordReset,
-  verifyEmail
+  verifyEmail,
+  googleLogin
 };

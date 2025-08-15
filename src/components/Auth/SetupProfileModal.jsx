@@ -9,7 +9,7 @@ import ProfileStepShell from './ProfileStepShell';
 
 export default function SetupProfileModal({ onClose }) {
   const router = useRouter();
-  const { updateProfile, uploadAvatar: uploadAvatarApi, uploadBanner: uploadBannerApi } = useUser();
+  const { updateProfile } = useUser();
 
   // Steps: 0=avatar, 1=header, 2=bio, 3=location, 4=save
   const [step, setStep] = useState(0);
@@ -37,21 +37,20 @@ export default function SetupProfileModal({ onClose }) {
     reader.readAsDataURL(file);
   }
 
-  async function onAvatarChange(e) {
+  function onAvatarChange(e) {
     const file = e.target.files?.[0];
     if (file) {
       setAvatarFile(file);
       readAsDataURL(file, setAvatarDataUrl);
-      // upload immediately to backend and update user
-      try { await uploadAvatarApi(file); } catch {}
+      // Do not upload here; we keep images local to avoid 413
     }
   }
-  async function onHeaderChange(e) {
+  function onHeaderChange(e) {
     const file = e.target.files?.[0];
     if (file) {
       setHeaderFile(file);
       readAsDataURL(file, setHeaderDataUrl);
-      try { await uploadBannerApi(file); } catch {}
+      // Do not upload here; we keep images local to avoid 413
     }
   }
 
@@ -93,14 +92,22 @@ export default function SetupProfileModal({ onClose }) {
 
   async function handleSave() {
     try {
-      const payload = {
-        // avatarUrl/bannerUrl already saved on upload; keep for data-url fallback cases
-        avatarUrl: avatarDataUrl || undefined,
-        bannerUrl: headerDataUrl || undefined,
+      // Send only text fields to backend to avoid 413
+      await updateProfile({
         bio: (bio || '').trim() || undefined,
         location: (location || '').trim() || undefined,
-      };
-      await updateProfile(payload);
+      });
+
+      // Update local user avatar/banner with chosen images (front-only)
+      const nextAvatarUrl = avatarDataUrl || (avatarFile ? URL.createObjectURL(avatarFile) : '');
+      const nextBannerUrl = headerDataUrl || (headerFile ? URL.createObjectURL(headerFile) : '');
+      if (nextAvatarUrl || nextBannerUrl) {
+        if (typeof window !== 'undefined') {
+          const evt = new CustomEvent('user-profile-local-images', { detail: { avatarUrl: nextAvatarUrl, bannerUrl: nextBannerUrl } });
+          window.dispatchEvent(evt);
+        }
+      }
+
       handleClose();
     } catch {
       handleClose();
