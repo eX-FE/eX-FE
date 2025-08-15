@@ -198,7 +198,8 @@ app.post('/auth/logout', (req, res) => {
 app.patch('/profile', (req, res) => {
   const user = getUserFromAuthHeader(req);
   if (!user) return res.status(401).json({ error: 'Unauthorized' });
-  const { avatarUrl, bannerUrl, bio, location } = req.body || {};
+  const { name, avatarUrl, bannerUrl, bio, location } = req.body || {};
+  if (typeof name === 'string') user.name = name;
   if (typeof avatarUrl === 'string') user.avatarUrl = avatarUrl;
   if (typeof bannerUrl === 'string') user.bannerUrl = bannerUrl;
   if (typeof bio === 'string') user.bio = bio;
