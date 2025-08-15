@@ -33,9 +33,21 @@ function deleteMe(req, res, next) {
   }
 }
 
+function search(req, res, next) {
+  try {
+    const q = (req.query.q || '').toString().trim();
+    if (!q) return res.json({ users: [] });
+    const users = userService.searchUsers(q, 10);
+    return res.json({ users });
+  } catch (e) {
+    next(e);
+  }
+}
+
 module.exports = {
   me,
   getByUsername,
   updateMe,
-  deleteMe
+  deleteMe,
+  search
 };

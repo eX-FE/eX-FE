@@ -116,7 +116,30 @@ export async function searchUsers(query) {
   const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
   const q = (query || '').trim();
   if (!q) return { users: [] };
-  // Attempt exact username lookup and wrap in an array
+
+  // Preferred: backend search endpoint (if available)
+  try {
+    const res = await fetch(`${BACKEND_BASE_URL}/users/search?q=${encodeURIComponent(q)}`, {
+      method: 'GET',
+      headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    });
+    if (res.ok) {
+      const data = await res.json().catch(() => ({}));
+      const rawUsers = Array.isArray(data.users) ? data.users : [];
+      const users = rawUsers.map((p) => ({
+        id: p.id,
+        name: p.displayName || p.name || p.username,
+        username: p.username,
+        avatarUrl: p.avatarUrl || '',
+        bio: p.bio || '',
+        followers: p.stats?.followers ?? p.followers ?? 0,
+        following: p.stats?.following ?? p.following ?? 0,
+      }));
+      return { users };
+    }
+  } catch {}
+
+  // Fallback: exact username lookup
   const res = await fetch(`${BACKEND_BASE_URL}/users/${encodeURIComponent(q)}`, {
     method: 'GET',
     headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
@@ -181,5 +204,24 @@ export async function unfollowUser(username) {
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || data.message || 'Unfollow failed');
+  return data;
+}
+
+export async function getFollowers(username) {
+  const res = await fetch(`${BACKEND_BASE_URL}/follows/${encodeURIComponent(username)}/followers`, {
+    method: 'GET'
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Failed to load followers');
+  // data shape: { count, users: [...] }
+  return data;
+}
+
+export async function getFollowing(username) {
+  const res = await fetch(`${BACKEND_BASE_URL}/follows/${encodeURIComponent(username)}/following`, {
+    method: 'GET'
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Failed to load following');
   return data;
 }

@@ -1,10 +1,11 @@
 import React from 'react';
+import Link from 'next/link';
 import './profile.css';
 
 const FollowStats = ({ followers, following }) => (
   <div className="follow-stats">
-    <span className="stat"><strong>{following}</strong> Following</span>
-    <span className="stat"><strong>{followers}</strong> Followers</span>
+    <Link href="/following" className="stat"><strong>{following}</strong> Following</Link>
+    <Link href="/followers" className="stat"><strong>{followers}</strong> Followers</Link>
   </div>
 );
 
