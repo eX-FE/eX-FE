@@ -27,6 +27,7 @@
   right: 0;
   top: 0;
   height: 100vh;
+  overflow-y: auto;
 }
 
 /* Dark mode styles */

@@ -169,7 +169,7 @@ export default function UserProfilePage() {
               }
             }}
           >
-            {isFollowing ? 'Unfollow' : 'Follow'}
+            {isFollowing ? 'Following' : 'Follow'}
           </button>
         </div>
       </div>
