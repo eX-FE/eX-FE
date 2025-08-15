@@ -1,5 +1,6 @@
 const userStore = require('../models/User');
 const followStore = require('../models/Follow');
+const notificationService = require('./notificationService');
 
 function requireUserByUsername(username) {
   const u = userStore.findRawByUsername ? userStore.findRawByUsername(username) : null;
@@ -17,6 +18,10 @@ function follow(actorUserId, targetUsername) {
   if (added) {
     actor.stats.following += 1;
     target.stats.followers += 1;
+    notificationService.createFollowNotification({
+      actorUserId: actor.id,
+      targetUserId: target.id
+    });
   }
   return { following: followStore.isFollowing(actor.id, target.id), actor: userStore.safe(actor), target: userStore.safe(target) };
 }
