@@ -3,12 +3,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { searchUsers } from '../utils/api';
+import { followUser, unfollowUser } from '../utils/api';
+import { useUser } from '../context/UserContext';
 import styles from './RightSidebar.module.css';
 
 export default function RightSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const isExplore = pathname === '/explore';
+  const { user: currentUser } = useUser();
   const [searchQuery, setSearchQuery] = useState('');
   const [showTooltip, setShowTooltip] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -89,6 +92,38 @@ export default function RightSidebar() {
     setShowResults(false);
   };
 
+  // First "Who to follow" suggestion (random existing account)
+  const [suggested, setSuggested] = useState(null);
+  const [firstFollowing, setFirstFollowing] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    async function pickSuggestion() {
+      const seeds = ['a','e','i','o','u','s','n'];
+      for (const seed of seeds) {
+        try {
+          const res = await searchUsers(seed);
+          const list = (res.users || []).filter(u => !currentUser || u.username !== currentUser.username);
+          if (!cancelled && list.length > 0) { setSuggested(list[0]); break; }
+        } catch {}
+      }
+    }
+    pickSuggestion();
+    return () => { cancelled = true; };
+  }, [currentUser]);
+
+  async function toggleFollowFirst() {
+    if (!suggested) return;
+    try {
+      if (!firstFollowing) {
+        setFirstFollowing(true);
+        try { await followUser(suggested.username); } catch {}
+      } else {
+        setFirstFollowing(false);
+        try { await unfollowUser(suggested.username); } catch {}
+      }
+    } catch {}
+  }
+
   return (
     <div className={styles.rightSidebar}>
       {/* Search Bar (hidden on /explore) */}
@@ -158,36 +193,36 @@ export default function RightSidebar() {
                   
                                    {/* User results */}
                    <div className={styles.userResults}>
-                                           {searchResults.map((user) => (
-                        <div key={user.id} className={styles.userResult}>
-                          <div className={styles.userMeta} onClick={() => handleUserClick(user)}>
-                            <div className={styles.userAvatar}>
-                              {user.avatarUrl ? (
-                                <img src={user.avatarUrl} alt={user.name} className={styles.avatarImage} />
-                              ) : (
-                                <div className={styles.avatarPlaceholder}>
-                                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#888">
-                                    <path d="M12 2a5 5 0 100 10 5 5 0 000-10zm0 12c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5z" />
-                                  </svg>
-                                </div>
-                              )}
-                            </div>
-                            <div className={styles.userInfo}>
-                              <div className={styles.userName}>{user.name}</div>
-                              <div className={styles.userUsername}>@{user.username}</div>
-                              {user.bio && <div className={styles.userBio}>{user.bio}</div>}
-                            </div>
-                          </div>
-                          <button className={styles.moreButton} aria-label="More options">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                              <circle cx="5" cy="12" r="2" />
-                              <circle cx="12" cy="12" r="2" />
-                              <circle cx="19" cy="12" r="2" />
-                            </svg>
-                          </button>
-                        </div>
-                      ))}
-                  </div>
+                     {searchResults.map((user) => (
+                       <div key={user.id} className={styles.userResult}>
+                         <div className={styles.userMeta} onClick={() => handleUserClick(user)}>
+                           <div className={styles.userAvatar}>
+                             {user.avatarUrl ? (
+                               <img src={user.avatarUrl} alt={user.name} className={styles.avatarImage} />
+                             ) : (
+                               <div className={styles.avatarPlaceholder}>
+                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="#888">
+                                   <path d="M12 2a5 5 0 100 10 5 5 0 000-10zm0 12c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5z" />
+                                 </svg>
+                               </div>
+                             )}
+                           </div>
+                           <div className={styles.userInfo}>
+                             <div className={styles.userName}>{user.name}</div>
+                             <div className={styles.userUsername}>@{user.username}</div>
+                             {user.bio && <div className={styles.userBio}>{user.bio}</div>}
+                           </div>
+                         </div>
+                         <button className={styles.moreButton} aria-label="More options">
+                           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                             <circle cx="5" cy="12" r="2" />
+                             <circle cx="12" cy="12" r="2" />
+                             <circle cx="19" cy="12" r="2" />
+                           </svg>
+                         </button>
+                       </div>
+                     ))}
+                   </div>
                 </>
               ) : (
                 <div className={styles.noResults}>
@@ -198,6 +233,109 @@ export default function RightSidebar() {
           )}
         </div>
       )}
+
+      {/* What's happening card */}
+      <div className={styles.happeningCard}>
+        <div className={styles.cardTitle}>What’s happening</div>
+
+        <div className={styles.hItem}>
+          <div className={styles.hMeta}>Trending in Mexico</div>
+          <button className={styles.hMore} aria-label="More">…</button>
+          <div className={styles.hTopic}>Piedras Negras</div>
+          <div className={styles.hCount}>3,648 posts</div>
+        </div>
+
+        <div className={styles.hItem}>
+          <div className={styles.hMeta}>Trending in Mexico</div>
+          <button className={styles.hMore} aria-label="More">…</button>
+          <div className={styles.hTopic}>THE AIR Q8 SHOOTING</div>
+          <div className={styles.hCount}>281K posts</div>
+        </div>
+
+        <div className={styles.hItem}>
+          <div className={styles.hMeta}>Trending in Mexico</div>
+          <button className={styles.hMore} aria-label="More">…</button>
+          <div className={styles.hTopic}>Norma Piña</div>
+          <div className={styles.hCount}>17.6K posts</div>
+        </div>
+
+        <div className={styles.hItem}>
+          <div className={styles.hMeta}>Only on X · Trending</div>
+          <button className={styles.hMore} aria-label="More">…</button>
+          <div className={styles.hTopic}>#FelizViernesATodos</div>
+          <div className={styles.hCount}>1,401 posts</div>
+        </div>
+
+        <button className={styles.showMore} type="button">Show more</button>
+      </div>
+
+      {/* Who to follow card */}
+      <div className={styles.followCard}>
+        <div className={styles.cardTitle}>Who to follow</div>
+        <div className={styles.fItem}>
+          <div className={styles.fAvatar}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {suggested?.avatarUrl ? (
+              <img src={suggested.avatarUrl} alt={suggested.name || suggested.username} onError={(e)=>{ e.currentTarget.style.display='none'; const sib=e.currentTarget.nextElementSibling; if(sib) sib.style.display='flex'; }} />
+            ) : (
+              <img src="/vercel.svg" alt="avatar" onError={(e)=>{ e.currentTarget.style.display='none'; const sib=e.currentTarget.nextElementSibling; if(sib) sib.style.display='flex'; }} />
+            )}
+            <div className={styles.avatarIcon} style={{display:'none'}}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#888"><path d="M12 2a5 5 0 100 10 5 5 0 000-10zm0 12c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5z"/></svg>
+            </div>
+          </div>
+          <div className={styles.fInfo}>
+            <div className={styles.fName}>{suggested?.name || suggested?.username || 'User'}</div>
+            <div className={styles.fUsername}>@{suggested?.username || 'username'}</div>
+          </div>
+          <button className={styles.fBtn} type="button" onClick={toggleFollowFirst}>{firstFollowing ? 'Following' : 'Follow'}</button>
+        </div>
+        <div className={styles.fItem}>
+          <div className={styles.fAvatar}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/next.svg" alt="brozo" onError={(e)=>{ e.currentTarget.style.display='none'; const sib=e.currentTarget.nextElementSibling; if(sib) sib.style.display='flex'; }} />
+            <div className={styles.avatarIcon} style={{display:'none'}}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#888"><path d="M12 2a5 5 0 100 10 5 5 0 000-10zm0 12c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5z"/></svg>
+            </div>
+          </div>
+          <div className={styles.fInfo}>
+            <div className={styles.fName}>brozo xmiswebs</div>
+            <div className={styles.fUsername}>@brozoxmiswebs</div>
+          </div>
+          <button className={styles.fBtn} type="button">Follow</button>
+        </div>
+        <div className={styles.fItem}>
+          <div className={styles.fAvatar}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/vercel.svg" alt="El Universal" onError={(e)=>{ e.currentTarget.style.display='none'; const sib=e.currentTarget.nextElementSibling; if(sib) sib.style.display='flex'; }} />
+            <div className={styles.avatarIcon} style={{display:'none'}}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#888"><path d="M12 2a5 5 0 100 10 5 5 0 000-10zm0 12c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5z"/></svg>
+            </div>
+          </div>
+          <div className={styles.fInfo}>
+            <div className={styles.fName}>El Universal</div>
+            <div className={styles.fUsername}>@EL_Universal_Mx</div>
+          </div>
+          <button className={styles.fBtn} type="button">Follow</button>
+        </div>
+        <button className={styles.showMore} type="button">Show more</button>
+      </div>
+
+      {/* Footer */}
+      <div className={styles.footer}>
+        <a className={styles.footerLink}>Terms of Service</a>
+        <span className={styles.footerDivider}>|</span>
+        <a className={styles.footerLink}>Privacy Policy</a>
+        <span className={styles.footerDivider}>|</span>
+        <a className={styles.footerLink}>Cookie Policy</a>
+        <span className={styles.footerDivider}>|</span>
+        <a className={styles.footerLink}>Accessibility</a>
+        <span className={styles.footerDivider}>|</span>
+        <a className={styles.footerLink}>Ads info</a>
+        <span className={styles.footerDivider}>|</span>
+        <a className={styles.footerLink}>More …</a>
+        <span className={styles.footerCopy}>© 2025 X Corp.</span>
+      </div>
 
       {/* Future content will go here */}
       <div className={styles.placeholder}>
