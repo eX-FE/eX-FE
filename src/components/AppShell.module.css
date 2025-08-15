@@ -1,0 +1,38 @@
+.container {
+  display: flex;
+  min-height: 100vh;
+  width: 100vw;
+}
+
+.leftSidebar {
+  width: 25%;
+  position: fixed;
+  height: 100vh;
+  left: 0;
+  top: 0;
+}
+
+.mainContent {
+  width: 50%;
+  margin-left: 25%;
+  margin-right: 25%;
+  min-height: 100vh;
+  border-left: 1px solid #eff3f4;
+  border-right: 1px solid #eff3f4;
+}
+
+.rightSidebar {
+  width: 25%;
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100vh;
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+  .mainContent {
+    border-left-color: #2f3336;
+    border-right-color: #2f3336;
+  }
+} 

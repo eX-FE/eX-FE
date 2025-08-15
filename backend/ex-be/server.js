@@ -231,6 +231,39 @@ app.post('/upload/banner', upload.single('file'), (req, res) => {
   return res.json({ url });
 });
 
+// Search users
+app.get('/search/users', (req, res) => {
+  const user = getUserFromAuthHeader(req);
+  if (!user) return res.status(401).json({ error: 'Unauthorized' });
+  
+  const { q } = req.query;
+  if (!q || typeof q !== 'string' || q.trim().length === 0) {
+    return res.json({ users: [] });
+  }
+  
+  const query = q.trim().toLowerCase();
+  
+  // Search by name or username (case-insensitive)
+  const matchingUsers = users
+    .filter(u => u.id !== user.id) // Exclude current user
+    .filter(u => 
+      u.name.toLowerCase().includes(query) || 
+      u.username.toLowerCase().includes(query)
+    )
+    .slice(0, 10) // Limit to 10 results
+    .map(u => ({
+      id: u.id,
+      name: u.name,
+      username: u.username,
+      avatarUrl: u.avatarUrl || '',
+      bio: u.bio || '',
+      followers: u.followers || 0,
+      following: u.following || 0
+    }));
+  
+  return res.json({ users: matchingUsers });
+});
+
 // Fallback
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 

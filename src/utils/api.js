@@ -100,6 +100,17 @@ export async function uploadAvatar(file) {
   return { url };
 }
 
+export async function searchUsers(query) {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+  const res = await fetch(`${BACKEND_BASE_URL}/search/users?q=${encodeURIComponent(query)}`, {
+    method: 'GET',
+    headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Search failed');
+  return data; // { users }
+}
+
 export async function uploadBanner(file) {
   const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
   const form = new FormData();
