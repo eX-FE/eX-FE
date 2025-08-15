@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Avatar from '../../../components/User/Avatar';
 import FollowStats from '../../../components/User/FollowStats';
@@ -10,6 +10,7 @@ import ProfileTabs from '../../../components/User/ProfileTabs';
 import UserInfo from '../../../components/User/UserInfo';
 import '../../../components/User/profile.css';
 import { useUser } from '../../../context/UserContext';
+import { followUser, unfollowUser } from '../../../utils/api';
 
 export default function UserProfilePage() {
   const { username } = useParams();
@@ -19,6 +20,11 @@ export default function UserProfilePage() {
   const [profileUser, setProfileUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { updateLocalUser } = useUser();
+
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+  const initializedFollowing = useRef(false);
 
   useEffect(() => {
     if (!isLoading && !currentUser) {
@@ -54,6 +60,15 @@ export default function UserProfilePage() {
       getUserFromParams();
     }
   }, [username, currentUser, isLoading, router]);
+
+  // derive initial following state from the profileUser when it loads
+  useEffect(() => {
+    if (profileUser && currentUser && !initializedFollowing.current) {
+      // profileUser may contain a boolean 'isFollowed' or 'following' flag from search results
+      setIsFollowing(Boolean(profileUser.isFollowed === true || profileUser.following === true));
+      initializedFollowing.current = true;
+    }
+  }, [profileUser, currentUser]);
 
   if (isLoading || loading) {
     return (
@@ -104,12 +119,57 @@ export default function UserProfilePage() {
       <div className="profile-actions">
         <div className="action-buttons">
           <button className="more-button" aria-label="More options">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 8.5c1.93 0 3.5-1.57 3.5-3.5S13.93 1.5 12 1.5 8.5 3.07 8.5 5 10.07 8.5 12 8.5zm0 2c-1.93 0-3.5 1.57-3.5 3.5s1.57 3.5 3.5 3.5 3.5-1.57 3.5-3.5-1.57-3.5-3.5-3.5zm0 7c-1.93 0-3.5 1.57-3.5 3.5s1.57 3.5 3.5 3.5 3.5-1.57 3.5-3.5-1.57-3.5-3.5-3.5z"/>
-            </svg>
+            <span className="more-ellipsis" aria-hidden>...</span>
           </button>
-          <button className="follow-button">
-            Follow
+          <button
+            className="follow-button"
+            disabled={actionLoading}
+            onClick={async () => {
+              if (!currentUser) return router.push('/login');
+              setActionLoading(true);
+              setError(null);
+              // Optimistic update: immediately reflect the UI change
+              if (!isFollowing) {
+                setIsFollowing(true);
+                setProfileUser((prev) => ({ ...prev, followers: (prev.followers ?? 0) + 1, isFollowed: true }));
+                // locally increment current user's following count
+                updateLocalUser({ following: (currentUser.following ?? 0) + 1 });
+                try {
+                  const res = await followUser(profileUser.username);
+                  // reconcile with server response
+                  if (res.actor) updateLocalUser(res.actor);
+                  setProfileUser((prev) => ({ ...prev, followers: res.target?.followers ?? prev.followers, isFollowed: true }));
+                } catch (err) {
+                  // revert optimistic updates on error
+                  setIsFollowing(false);
+                  setProfileUser((prev) => ({ ...prev, followers: Math.max(0, (prev.followers ?? 1) - 1), isFollowed: false }));
+                  updateLocalUser({ following: Math.max(0, (currentUser.following ?? 1) - 1) });
+                  setError(err.message || 'Follow failed');
+                } finally {
+                  setActionLoading(false);
+                }
+              } else {
+                // currently following -> optimistic unfollow
+                setIsFollowing(false);
+                setProfileUser((prev) => ({ ...prev, followers: Math.max(0, (prev.followers ?? 1) - 1), isFollowed: false }));
+                updateLocalUser({ following: Math.max(0, (currentUser.following ?? 1) - 1) });
+                try {
+                  const res = await unfollowUser(profileUser.username);
+                  if (res.actor) updateLocalUser(res.actor);
+                  setProfileUser((prev) => ({ ...prev, followers: res.target?.followers ?? prev.followers, isFollowed: false }));
+                } catch (err) {
+                  // revert optimistic changes on error
+                  setIsFollowing(true);
+                  setProfileUser((prev) => ({ ...prev, followers: (prev.followers ?? 0) + 1, isFollowed: true }));
+                  updateLocalUser({ following: (currentUser.following ?? 0) + 1 });
+                  setError(err.message || 'Unfollow failed');
+                } finally {
+                  setActionLoading(false);
+                }
+              }
+            }}
+          >
+            {isFollowing ? 'Unfollow' : 'Follow'}
           </button>
         </div>
       </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { fetchMe, loginUser, logoutUser, registerUser, loginWithGoogleIdToken, updateProfile as apiUpdateProfile, uploadAvatar as apiUploadAvatar, uploadBanner as apiUploadBanner } from '../utils/api';
+import { fetchMe, loginUser, logoutUser, registerUser, updateProfile as apiUpdateProfile, loginWithGoogleIdToken } from '../utils/api';
 
 export const UserContext = createContext(null);
 
@@ -12,31 +12,71 @@ export function UserProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  function normalizeUser(raw) {
+    if (!raw) return null;
+    // raw could be { user } or { profile } shape from backend services
+    const u = raw;
+    const created = u.createdAt ? new Date(u.createdAt) : null;
+    const joinDate = created
+      ? created.toLocaleString('en-US', { month: 'long', year: 'numeric' })
+      : undefined;
+    return {
+      id: u.id,
+      email: u.email,
+      username: u.username,
+      name: u.displayName || u.name || u.username,
+      displayName: u.displayName || u.name || u.username,
+      bio: u.bio || '',
+      location: u.location || '',
+      website: u.website || '',
+      avatarUrl: u.avatarUrl || '',
+      bannerUrl: u.bannerUrl || '',
+      followers: u.stats?.followers ?? u.followers ?? 0,
+      following: u.stats?.following ?? u.following ?? 0,
+      posts: u.stats?.tweets ?? u.posts ?? 0,
+      createdAt: u.createdAt,
+      updatedAt: u.updatedAt,
+      joinDate,
+    };
+  }
+
+  function getOverrideKey(userId) {
+    return `profile_overrides_${userId}`;
+  }
+
+  function applyLocalOverrides(normalizedUser) {
+    if (!normalizedUser || typeof window === 'undefined') return normalizedUser;
+    try {
+      const key = getOverrideKey(normalizedUser.id);
+      const raw = window.localStorage.getItem(key);
+      if (!raw) return normalizedUser;
+      const { avatarUrl, bannerUrl } = JSON.parse(raw || '{}');
+      return {
+        ...normalizedUser,
+        avatarUrl: avatarUrl || normalizedUser.avatarUrl,
+        bannerUrl: bannerUrl || normalizedUser.bannerUrl,
+      };
+    } catch {
+      return normalizedUser;
+    }
+  }
+
   // Load current user from token
   useEffect(() => {
     async function load() {
       try {
         setIsLoading(true);
         setError(null);
-        
-        // Check if we have a token first
         const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
-        console.log('[UserContext] Token check:', token ? 'exists' : 'missing');
-        
         if (!token) {
-          console.log('[UserContext] No token found, setting user to null');
           setUser(null);
           setIsLoading(false);
           return;
         }
-
-        console.log('[UserContext] Fetching user data...');
         const data = await fetchMe();
-        console.log('[UserContext] User data received:', data.user);
-        setUser(data.user);
+        const normalized = normalizeUser(data.user);
+        setUser(applyLocalOverrides(normalized));
       } catch (err) {
-        console.log('[UserContext] Error fetching user data:', err.message);
-        // If token is invalid, clear it from localStorage
         if (typeof window !== 'undefined') {
           localStorage.removeItem('access_token');
         }
@@ -49,28 +89,57 @@ export function UserProvider({ children }) {
     load();
   }, []);
 
+  // Listen for local image updates dispatched by EditProfileModal
+  useEffect(() => {
+    function onLocalImages(e) {
+      const { avatarUrl, bannerUrl } = e.detail || {};
+      setUser((prev) => {
+        if (!prev) return prev;
+        try {
+          if (typeof window !== 'undefined') {
+            const key = getOverrideKey(prev.id);
+            const current = JSON.parse(window.localStorage.getItem(key) || '{}');
+            const next = { ...current };
+            if (avatarUrl) next.avatarUrl = avatarUrl;
+            if (bannerUrl) next.bannerUrl = bannerUrl;
+            window.localStorage.setItem(key, JSON.stringify(next));
+          }
+        } catch {}
+        return { ...prev, avatarUrl: avatarUrl || prev.avatarUrl, bannerUrl: bannerUrl || prev.bannerUrl };
+      });
+    }
+    if (typeof window !== 'undefined') {
+      window.addEventListener('user-profile-local-images', onLocalImages);
+      return () => window.removeEventListener('user-profile-local-images', onLocalImages);
+    }
+  }, []);
+
   async function handleRegister(payload) {
     setError(null);
-    const data = await registerUser(payload);
-    localStorage.setItem('access_token', data.token);
-    setUser(data.user);
-    return data.user;
+    await registerUser(payload);
+    const loginRes = await loginUser({ email: payload.email, password: payload.password });
+    localStorage.setItem('access_token', loginRes.accessToken);
+    const normalized = normalizeUser(loginRes.user);
+    setUser(applyLocalOverrides(normalized));
+    return applyLocalOverrides(normalized);
   }
 
   async function handleLogin(payload) {
     setError(null);
     const data = await loginUser(payload);
-    localStorage.setItem('access_token', data.token);
-    setUser(data.user);
-    return data.user;
+    localStorage.setItem('access_token', data.accessToken);
+    const normalized = normalizeUser(data.user);
+    setUser(applyLocalOverrides(normalized));
+    return applyLocalOverrides(normalized);
   }
 
   async function handleGoogleLogin(idToken) {
     setError(null);
     const data = await loginWithGoogleIdToken(idToken);
-    localStorage.setItem('access_token', data.token);
-    setUser(data.user);
-    return data.user;
+    localStorage.setItem('access_token', data.accessToken);
+    const normalized = normalizeUser(data.user);
+    setUser(applyLocalOverrides(normalized));
+    return applyLocalOverrides(normalized);
   }
 
   async function handleLogout() {
@@ -84,25 +153,21 @@ export function UserProvider({ children }) {
 
   async function handleUpdateProfile(partial) {
     setError(null);
-    const data = await apiUpdateProfile(partial);
-    setUser(data.user);
-    return data.user;
+    const toSend = { ...partial };
+    if (Object.prototype.hasOwnProperty.call(toSend, 'name')) {
+      toSend.displayName = toSend.name;
+      delete toSend.name;
+    }
+    const data = await apiUpdateProfile(toSend);
+    const normalized = normalizeUser(data.profile);
+    setUser(applyLocalOverrides(normalized));
+    return applyLocalOverrides(normalized);
   }
 
-  async function uploadAvatar(file) {
-    const { url } = await apiUploadAvatar(file);
-    // Optimistically update avatar
-    const updated = await handleUpdateProfile({ avatarUrl: url });
-    return updated;
+  function updateLocalUser(patch) {
+    setUser((prev) => (prev ? { ...prev, ...patch } : prev));
   }
 
-  async function uploadBanner(file) {
-    const { url } = await apiUploadBanner(file);
-    const updated = await handleUpdateProfile({ bannerUrl: url });
-    return updated;
-  }
-
-  // Helper function to clear all auth state (useful for debugging)
   function clearAuthState() {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('access_token');
@@ -121,8 +186,9 @@ export function UserProvider({ children }) {
       loginWithGoogle: handleGoogleLogin, 
       logout: handleLogout,
       updateProfile: handleUpdateProfile,
-      uploadAvatar,
-      uploadBanner,
+      // uploadAvatar,
+      // uploadBanner,
+      updateLocalUser,
       clearAuthState
     }),
     [user, isLoading, error]

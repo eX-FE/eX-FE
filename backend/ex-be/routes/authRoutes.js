@@ -15,4 +15,7 @@ router.get('/me', authRequired, ctrl.me);
 router.post('/password/reset/request', ctrl.requestPasswordReset);
 router.get('/verify-email', ctrl.verifyEmail);
 
+// Google OAuth
+router.post('/google', authLimiter, ctrl.googleLogin);
+
 module.exports = router;

@@ -6,7 +6,7 @@ const Avatar = ({ avatarUrl }) => {
   return (
     <div className="avatar-wrapper">
       {hasImage ? (
-        <img src={avatarUrl} alt="User avatar" className="avatar" />
+      <img src={avatarUrl} alt="User avatar" className="avatar" />
       ) : (
         <div className="avatar" style={{ display:'flex', alignItems:'center', justifyContent:'center', background:'#ccc' }}>
           <svg width="56" height="56" viewBox="0 0 24 24" fill="#888">

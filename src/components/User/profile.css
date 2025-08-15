@@ -80,6 +80,13 @@
   transition: background-color 0.2s ease;
 }
 
+.more-ellipsis {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 1px;
+}
+
 .more-button:hover {
   background-color: rgba(15, 20, 25, 0.1);
 }
@@ -104,6 +111,10 @@
 @media (prefers-color-scheme: dark) {
   .more-button {
     border-color: #536471;
+    color: #e7e9ea;
+  }
+
+  .more-ellipsis {
     color: #e7e9ea;
   }
   
