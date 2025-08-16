@@ -18,8 +18,13 @@ async function register({ email, password, username }) {
 }
 
 async function login({ email, password }) {
+  console.log('Login attempt for email:', email);
   const user = await userStore.verifyPassword(email, password);
-  if (!user) throw new Error('Invalid credentials');
+  if (!user) {
+    console.log('Login failed for email:', email);
+    throw new Error('Invalid credentials');
+  }
+  console.log('Login successful for user:', user.username);
   const accessToken = signAccessToken({ sub: user.id });
   const refreshToken = signRefreshToken({ sub: user.id });
   refreshStore.set(refreshToken, user.id);

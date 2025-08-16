@@ -70,7 +70,19 @@ app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 // Error handler
 app.use(require('./middleware/errorHandler'));
 
+// Initialize sample data
+const { initializeSampleData } = require('./sampleData');
+
 server.listen(PORT, () => {
   console.log(`🟢 Backend API running at http://localhost:${PORT}`);
   console.log(`🔗 WebSocket server available at ws://localhost:${PORT}/ws`);
+  
+  // Initialize sample data after server starts
+  setTimeout(async () => {
+    try {
+      await initializeSampleData();
+    } catch (error) {
+      console.error('Failed to initialize sample data:', error);
+    }
+  }, 1000);
 });

@@ -36,9 +36,15 @@ class UserStore {
   }
 
   async verifyPassword(email, password) {
+    console.log('Verifying password for email:', email);
     const user = this.users.find(u => u.email === email);
-    if (!user) return null;
+    if (!user) {
+      console.log('User not found for email:', email);
+      return null;
+    }
+    console.log('User found, comparing password for:', user.username);
     const ok = await bcrypt.compare(password, user.passwordHash);
+    console.log('Password comparison result:', ok);
     return ok ? user : null;
   }
 

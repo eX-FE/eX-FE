@@ -44,11 +44,46 @@ async function create(req, res, next) {
 async function getTweets(req, res, next) {
   try {
     console.log('getTweets called');
+    const { limit, offset, userId, feedType } = req.query;
+    const currentUserId = req.user?.id;
     
-    // Simple test response
+    const options = {
+      limit: parseInt(limit) || 50,
+      offset: parseInt(offset) || 0
+    };
+
+    let tweets;
+    
+    if (feedType === 'feed' && currentUserId) {
+      // Get user's feed (from people they follow)
+      tweets = await tweetService.getFeed(currentUserId, options);
+    } else if (userId) {
+      // Get tweets from specific user
+      tweets = await tweetService.getUserTweets(userId, options);
+      // Add like/retweet status for current user if logged in
+      if (currentUserId) {
+        tweets = tweets.map(tweet => ({
+          ...tweet,
+          isLiked: require('../models/Tweet').isLikedBy(tweet.id, currentUserId),
+          isRetweeted: require('../models/Tweet').isRetweetedBy(tweet.id, currentUserId)
+        }));
+      }
+    } else {
+      // Get all tweets (explore/public timeline)
+      tweets = await tweetService.getAllTweets(options);
+      // Add like/retweet status for current user if logged in
+      if (currentUserId) {
+        tweets = tweets.map(tweet => ({
+          ...tweet,
+          isLiked: require('../models/Tweet').isLikedBy(tweet.id, currentUserId),
+          isRetweeted: require('../models/Tweet').isRetweetedBy(tweet.id, currentUserId)
+        }));
+      }
+    }
+    
     return res.json({ 
-      tweets: [],
-      message: "Tweets endpoint working"
+      tweets,
+      hasMore: tweets.length === options.limit
     });
   } catch (error) {
     console.error('Error in getTweets:', error);
@@ -133,6 +168,29 @@ async function toggleLike(req, res, next) {
   }
 }
 
+async function toggleRetweet(req, res, next) {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const result = await tweetService.toggleRetweet(id, userId);
+    
+    // Emit WebSocket event for real-time updates
+    const wsManager = req.app.get('wsManager');
+    if (wsManager) {
+      wsManager.notifyTweetRetweet(id, userId, result.retweeted);
+    }
+    
+    return res.json({
+      message: result.retweeted ? 'Tweet retweeted' : 'Retweet removed',
+      retweeted: result.retweeted,
+      tweet: result.tweet
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function getFeed(req, res, next) {
   try {
     const userId = req.user.id;
@@ -174,12 +232,71 @@ async function votePoll(req, res, next) {
   }
 }
 
+async function replyToTweet(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { content } = req.body;
+    const userId = req.user.id;
+
+    if (!content?.trim()) {
+      return res.status(400).json({ error: 'Reply content is required' });
+    }
+
+    if (content.length > 280) {
+      return res.status(400).json({ error: 'Reply content must be 280 characters or less' });
+    }
+
+    const reply = await tweetService.createReply(id, userId, content.trim());
+    
+    // Emit WebSocket event for real-time updates
+    const wsManager = req.app.get('wsManager');
+    if (wsManager) {
+      wsManager.notifyNewReply(reply, reply.user);
+    }
+    
+    return res.status(201).json({
+      message: 'Reply created successfully',
+      tweet: reply
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function searchTweets(req, res, next) {
+  try {
+    const { q: query, limit, offset } = req.query;
+    
+    if (!query?.trim()) {
+      return res.status(400).json({ error: 'Search query is required' });
+    }
+
+    const options = {
+      limit: parseInt(limit) || 20,
+      offset: parseInt(offset) || 0
+    };
+
+    const tweets = await tweetService.searchTweets(query.trim(), options);
+    
+    return res.json({
+      tweets,
+      query: query.trim(),
+      hasMore: tweets.length === options.limit
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   create,
   getTweets,
   getTweetById,
   deleteTweet,
   toggleLike,
+  toggleRetweet,
   getFeed,
-  votePoll
+  votePoll,
+  replyToTweet,
+  searchTweets
 };

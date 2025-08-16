@@ -43,6 +43,20 @@ function createReplyNotification({ actorUserId, targetUserId, entityId }) {
   });
 }
 
+function createRetweetNotification({ actorUserId, targetUserId, entityId }) {
+  if (actorUserId === targetUserId) return null;
+  const actor = userStore.findById(actorUserId);
+  if (!actor) return null;
+  return notificationStore.add({
+    type: 'RETWEET',
+    actorUserId,
+    targetUserId,
+    entityId,
+    entityType: 'TWEET',
+    message: `${actor.username} retweeted your tweet`
+  });
+}
+
 function listUserNotifications(userId, opts) {
   return notificationStore.listForUser(userId, opts).map(n => decorate(n));
 }
@@ -68,6 +82,7 @@ module.exports = {
   createFollowNotification,
   createLikeNotification,
   createReplyNotification,
+  createRetweetNotification,
   listUserNotifications,
   markNotificationRead,
   markAllRead

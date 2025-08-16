@@ -16,4 +16,22 @@ function authRequired(req, res, next) {
   }
 }
 
-module.exports = { authRequired };
+function authOptional(req, res, next) {
+  const header = req.headers.authorization;
+  if (!header) {
+    req.user = null;
+    return next();
+  }
+  
+  const token = header.replace(/^Bearer\s+/i, '');
+  try {
+    const decoded = verifyAccess(token);
+    const user = userStore.findById(decoded.sub);
+    req.user = user || null;
+  } catch {
+    req.user = null;
+  }
+  next();
+}
+
+module.exports = { authRequired, authOptional };

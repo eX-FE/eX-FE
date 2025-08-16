@@ -6,7 +6,7 @@ class TweetStore {
     this.tweets = []; // In-memory (replace with DB later)
   }
 
-  create({ userId, content, imageUrl = null, poll = null, videoUrl = null }) {
+  create({ userId, content, imageUrl = null, poll = null, videoUrl = null, replyTo = null }) {
     if (!userId || (!content?.trim() && !poll)) {
       throw new Error('User ID and either content or poll are required');
     }
@@ -17,6 +17,7 @@ class TweetStore {
       content: content?.trim() || '',
       imageUrl,
       videoUrl,
+      replyTo, // ID of parent tweet if this is a reply
       poll: poll ? {
         id: uuid(),
         question: poll.question,
@@ -109,6 +110,30 @@ class TweetStore {
   isLikedBy(tweetId, userId) {
     const tweet = this.findById(tweetId);
     return tweet ? tweet.likedBy.has(userId) : false;
+  }
+
+  // Retweet/Unretweet functionality
+  toggleRetweet(tweetId, userId) {
+    const tweet = this.findById(tweetId);
+    if (!tweet) throw new Error('Tweet not found');
+
+    const isRetweeted = tweet.retweetedBy.has(userId);
+    
+    if (isRetweeted) {
+      tweet.retweetedBy.delete(userId);
+      tweet.stats.retweets = Math.max(0, tweet.stats.retweets - 1);
+    } else {
+      tweet.retweetedBy.add(userId);
+      tweet.stats.retweets += 1;
+    }
+    
+    tweet.updatedAt = new Date();
+    return { retweeted: !isRetweeted, tweet };
+  }
+
+  isRetweetedBy(tweetId, userId) {
+    const tweet = this.findById(tweetId);
+    return tweet ? tweet.retweetedBy.has(userId) : false;
   }
 
   // Poll voting functionality

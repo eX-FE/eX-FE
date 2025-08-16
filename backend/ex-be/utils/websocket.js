@@ -153,6 +153,35 @@ class WebSocketManager {
     });
   }
 
+  // Notify about new retweet
+  notifyTweetRetweet(tweetId, userId, retweeted) {
+    this.broadcast({
+      type: 'tweet_retweet',
+      data: {
+        tweetId,
+        userId,
+        retweeted
+      }
+    });
+  }
+
+  // Notify about new reply
+  notifyNewReply(reply, authorUser) {
+    this.broadcast({
+      type: 'new_reply',
+      data: {
+        reply,
+        author: {
+          id: authorUser.id,
+          username: authorUser.username,
+          displayName: authorUser.displayName,
+          avatarUrl: authorUser.avatarUrl,
+          verified: authorUser.verified
+        }
+      }
+    });
+  }
+
   // Notify about new follow
   notifyNewFollow(followerId, followingId, followerUser) {
     this.sendToUser(followingId, {
