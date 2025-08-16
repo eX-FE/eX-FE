@@ -2,11 +2,10 @@ require('dotenv').config({ path: __dirname + '/.env' });
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const { apiLimiter } = require('./middleware/rateLimit');
-const jwt = require('jsonwebtoken');
-const { OAuth2Client } = require('google-auth-library');
-const multer = require('multer');
-const fs = require('fs');
-const path = require('path');
+const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+const followRoutes = require('./routes/followRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5050;
@@ -20,55 +19,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json({ limit: '5mb' }));
+app.use(express.json());
 app.use(cookieParser());
 app.use(apiLimiter);
-
-// In-memory storage (for demo purposes only)
-const users = [];
-let nextUserId = 1;
-
-// JWT config
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-me';
-const JWT_EXPIRES_IN = '1h';
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
-const googleClient = GOOGLE_CLIENT_ID ? new OAuth2Client(GOOGLE_CLIENT_ID) : null;
-
-// Auth helpers
-function signToken(user) {
-  return jwt.sign({ sub: user.id, username: user.username }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
-}
-
-function getUserFromAuthHeader(req) {
-  const authHeader = req.header('Authorization');
-  if (!authHeader) return null;
-  const [scheme, token] = authHeader.split(' ');
-  if (scheme !== 'Bearer' || !token) return null;
-  try {
-    const payload = jwt.verify(token, JWT_SECRET);
-    const user = users.find(u => u.id === payload.sub);
-    return user || null;
-  } catch {
-    return null;
-  }
-}
-
-// File uploads setup
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, uploadsDir),
-  filename: (_req, file, cb) => {
-    const ext = path.extname(file.originalname || '').toLowerCase();
-    const base = path.basename(file.originalname || 'file', ext).replace(/[^a-z0-9-_]/gi, '_');
-    cb(null, `${Date.now()}_${Math.random().toString(36).slice(2)}_${base}${ext}`);
-  }
-});
-const upload = multer({ storage });
-// Serve static files
-app.use('/uploads', express.static(uploadsDir));
 
 // Health
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
@@ -81,155 +34,11 @@ app.get('/tweets', (req, res) => {
   ]);
 });
 
-// Auth routes (implemented inline below)
-
-app.post('/auth/register', (req, res) => {
-  let { name, username, email, password } = req.body || {};
-  if (!name || !username || !email || !password) {
-    return res.status(400).json({ error: 'Missing required fields' });
-  }
-  // Normalize inputs to avoid trailing/leading space issues
-  name = name.toString().trim();
-  const usernameNorm = username.toString().trim();
-  const emailNorm = email.toString().trim();
-
-  const emailExists = users.some(u => u.email.toLowerCase() === emailNorm.toLowerCase());
-  const usernameExists = users.some(u => u.username.toLowerCase() === usernameNorm.toLowerCase());
-  if (emailExists) return res.status(409).json({ error: 'Email already in use' });
-  if (usernameExists) return res.status(409).json({ error: 'Username already in use' });
-
-  const newUser = {
-    id: nextUserId++,
-    name,
-    username: usernameNorm,
-    email: emailNorm,
-    password, // NOTE: Plain text for demo. Do NOT do this in production.
-    joinDate: new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' }),
-    followers: 0,
-    following: 0,
-    posts: 0,
-    avatarUrl: '',
-    bannerUrl: '',
-    bio: '',
-    location: '',
-  };
-  users.push(newUser);
-
-  const token = signToken(newUser);
-
-  const { password: _, ...safeUser } = newUser;
-  return res.status(201).json({ token, user: safeUser });
-});
-
-app.post('/auth/login', (req, res) => {
-  const { email, username, identifier, password } = req.body || {};
-  const id = (email || username || identifier || '').toString().trim();
-  if (!id || !password) {
-    return res.status(400).json({ error: 'Missing email/username or password' });
-  }
-  const idLower = id.toLowerCase();
-  const existing = users.find(
-    u => u.email.toLowerCase() === idLower || u.username.toLowerCase() === idLower
-  );
-  if (!existing || existing.password !== password) {
-    return res.status(401).json({ error: 'Invalid credentials' });
-  }
-
-  const token = signToken(existing);
-  const { password: _, ...safeUser } = existing;
-  return res.json({ token, user: safeUser });
-});
-
-// Google OAuth: exchange Google ID token for our JWT
-app.post('/auth/google', async (req, res) => {
-  try {
-    if (!googleClient || !GOOGLE_CLIENT_ID) {
-      return res.status(500).json({ error: 'Google OAuth not configured on server' });
-    }
-    const { idToken } = req.body || {};
-    if (!idToken) return res.status(400).json({ error: 'Missing idToken' });
-    const ticket = await googleClient.verifyIdToken({ idToken, audience: GOOGLE_CLIENT_ID });
-    const payload = ticket.getPayload();
-    const googleSub = payload.sub;
-    const email = payload.email;
-    const name = payload.name || email;
-    if (!email || !googleSub) return res.status(400).json({ error: 'Invalid Google token' });
-
-    let user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-    if (!user) {
-      user = {
-        id: nextUserId++,
-        name,
-        username: `google-${googleSub.slice(-8)}`,
-        email,
-        password: '',
-        joinDate: new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' }),
-        followers: 0,
-        following: 0,
-        posts: 0,
-        avatarUrl: payload.picture || '',
-        bannerUrl: '',
-        bio: '',
-        location: '',
-      };
-      users.push(user);
-    }
-
-    const token = signToken(user);
-    const { password: _, ...safeUser } = user;
-    return res.json({ token, user: safeUser });
-  } catch (err) {
-    return res.status(401).json({ error: 'Google token verification failed' });
-  }
-});
-
-app.get('/auth/me', (req, res) => {
-  const user = getUserFromAuthHeader(req);
-  if (!user) return res.status(401).json({ error: 'Unauthorized' });
-  const { password: _, ...safeUser } = user;
-  return res.json({ user: safeUser });
-});
-
-app.post('/auth/logout', (req, res) => {
-  return res.status(204).send();
-});
-
-// Update profile (metadata)
-app.patch('/profile', (req, res) => {
-  const user = getUserFromAuthHeader(req);
-  if (!user) return res.status(401).json({ error: 'Unauthorized' });
-  const { name, avatarUrl, bannerUrl, bio, location } = req.body || {};
-  if (typeof name === 'string') user.name = name;
-  if (typeof avatarUrl === 'string') user.avatarUrl = avatarUrl;
-  if (typeof bannerUrl === 'string') user.bannerUrl = bannerUrl;
-  if (typeof bio === 'string') user.bio = bio;
-  if (typeof location === 'string') user.location = location;
-  const { password: _, ...safeUser } = user;
-  return res.json({ user: safeUser });
-});
-
-// Upload endpoints (authenticated)
-app.post('/upload/avatar', upload.single('file'), (req, res) => {
-  const user = getUserFromAuthHeader(req);
-  if (!user) return res.status(401).json({ error: 'Unauthorized' });
-  if (!req.file) return res.status(400).json({ error: 'Missing file' });
-  if (!req.file.mimetype || !req.file.mimetype.startsWith('image/')) {
-    return res.status(400).json({ error: 'Only image files are allowed' });
-  }
-  const url = `/uploads/${req.file.filename}`;
-  return res.json({ url });
-});
-
-app.post('/upload/banner', upload.single('file'), (req, res) => {
-  const user = getUserFromAuthHeader(req);
-  if (!user) return res.status(401).json({ error: 'Unauthorized' });
-  if (!req.file) return res.status(400).json({ error: 'Missing file' });
-  if (!req.file.mimetype || !req.file.mimetype.startsWith('image/')) {
-    return res.status(400).json({ error: 'Only image files are allowed' });
-  }
-  const url = `/uploads/${req.file.filename}`;
-  return res.json({ url });
-});
+// Auth routes
+app.use('/auth', authRoutes);
+app.use('/users', userRoutes); // mount users routes
+app.use('/follows', followRoutes);
+app.use('/notifications', notificationRoutes);
 
 // Fallback
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));

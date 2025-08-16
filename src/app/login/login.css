@@ -148,7 +148,7 @@
 .auth-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -384,7 +384,7 @@
 
 /* Dark mode: restore modal overlay color only */
 @media (prefers-color-scheme: dark) {
-  .auth-overlay { background: rgba(21, 32, 43, 0.6); backdrop-filter: blur(2px); }
+  .auth-overlay { background: rgba(21, 32, 43, 0.45); backdrop-filter: blur(2px); }
 }
 
 .auth-modal .oauth-google {
@@ -450,12 +450,12 @@
 }
 
 .auth-overlay {
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(2px);
 }
 @media (prefers-color-scheme: dark) {
   .auth-overlay {
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(21, 32, 43, 0.45);
   }
 }
 
@@ -496,7 +496,7 @@
 }
 
 /* Logout modal tweaks: smaller card, tighter spacing */
-.logout-overlay { background: rgba(107, 114, 128, 0.35); backdrop-filter: blur(2px); }
+.logout-overlay { background: rgba(107, 114, 128, 0.25); backdrop-filter: blur(2px); }
 .logout-modal { max-width: 420px; border-radius: 16px; }
 .logout-modal .modal-title { font-size: 22px; }
 .logout-modal .modal-content { padding-top: 12px; }
@@ -806,7 +806,7 @@
   .modal-subtitle {
     color: #8b98a5;
   }
-
+  
   .profile-picture-circle {
     background: #16181c;
     border-color: #2f3336;
@@ -816,7 +816,7 @@
     background: #1e2732;
     border-color: #1d9bf0;
   }
-
+  
   .profile-picture-circle .camera-icon {
     color: #8b98a5;
   }
@@ -825,7 +825,7 @@
     background: #16181c;
     border-color: #2f3336;
   }
-
+  
   .header-picture-area:hover {
     background: #1e2732;
     border-color: #1d9bf0;
@@ -838,7 +838,7 @@
   .profile-preview {
     background: #16181c;
   }
-
+  
   .profile-name {
     color: #e7e9ea;
   }
@@ -860,11 +860,11 @@
     border-color: #2f3336;
     color: #e7e9ea;
   }
-
+  
   .bio-textarea:focus {
     border-color: #1d9bf0;
   }
-
+  
   .bio-textarea::placeholder {
     color: #8b98a5;
   }
@@ -877,11 +877,11 @@
     background: #e7e9ea;
     color: #0f1419;
   }
-
+  
   .save-btn:hover {
     background: #d7dbdc;
   }
-
+  
   .profile-setup-modal .modal-input {
     background: #000;
     border-color: #2f3336;

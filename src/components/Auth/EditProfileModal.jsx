@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import '../../app/login/login.css';
 import { useUser } from '../../context/UserContext';
-import { uploadAvatar as apiUploadAvatar, uploadBanner as apiUploadBanner } from '../../utils/api';
+// import { uploadAvatar as apiUploadAvatar, uploadBanner as apiUploadBanner } from '../../utils/api';
 
 export default function EditProfileModal({ onClose }) {
   const { user, updateProfile } = useUser();
@@ -13,6 +13,14 @@ export default function EditProfileModal({ onClose }) {
   const [name, setName] = useState(user?.name || '');
   const [bio, setBio] = useState(user?.bio || '');
   const [location, setLocation] = useState(user?.location || '');
+  const [saving, setSaving] = useState(false);
+  
+  // Keep form in sync with latest user data
+  useEffect(() => {
+    setName(user?.name || '');
+    setBio(user?.bio || '');
+    setLocation(user?.location || '');
+  }, [user]);
   
   // Store files locally until save
   const [avatarFile, setAvatarFile] = useState(null);
@@ -27,33 +35,31 @@ export default function EditProfileModal({ onClose }) {
 
   async function handleSave() {
     try {
-      let avatarUrl = user?.avatarUrl;
-      let bannerUrl = user?.bannerUrl;
+      setSaving(true);
 
-      // Upload avatar if changed
-      if (avatarFile) {
-        const result = await apiUploadAvatar(avatarFile);
-        avatarUrl = result.url;
-      }
-
-      // Upload banner if changed
-      if (bannerFile) {
-        const result = await apiUploadBanner(bannerFile);
-        bannerUrl = result.url;
-      }
-
-      // Update profile with all changes
+      // Do NOT upload images to backend to avoid 413. Send only text fields.
       await updateProfile({
         name: name.trim(),
-        avatarUrl: avatarUrl || undefined,
-        bannerUrl: bannerUrl || undefined,
         bio: bio.trim() || undefined,
         location: location.trim() || undefined,
       });
-      
+
+      // After a successful backend update, patch local user with chosen images
+      // so the profile immediately reflects them (front-only storage).
+      const nextAvatarUrl = avatarPreview || user?.avatarUrl || '';
+      const nextBannerUrl = bannerPreview || user?.bannerUrl || '';
+      if (nextAvatarUrl || nextBannerUrl) {
+        // Manually update local user; safe as front-only presentation
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const evt = new CustomEvent('user-profile-local-images', { detail: { avatarUrl: nextAvatarUrl, bannerUrl: nextBannerUrl } });
+        if (typeof window !== 'undefined') window.dispatchEvent(evt);
+      }
+
       handleClose();
     } catch {
       handleClose();
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -105,7 +111,7 @@ export default function EditProfileModal({ onClose }) {
             <button aria-label="Close" onClick={handleClose} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', marginRight: 25 }}>×</button>
             <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>Edit profile</h2>
           </div>
-          <button className="primary-btn" onClick={handleSave} style={{ height: 32, padding: '0 16px', fontSize: 14, marginTop: 0, maxWidth: 80 }}>Save</button>
+          <button className="primary-btn" onClick={handleSave} disabled={saving} style={{ height: 32, padding: '0 16px', fontSize: 14, marginTop: 0, maxWidth: 80 }}>{saving ? 'Saving…' : 'Save'}</button>
         </div>
         
         <div style={{ height: 'calc(100% - 60px)', overflowY: 'auto' }}>

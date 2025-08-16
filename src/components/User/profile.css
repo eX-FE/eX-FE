@@ -52,6 +52,86 @@
   font-weight: 500;
 }
 
+/* Profile actions for other users */
+.profile-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 16px;
+  margin-top: 60px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.more-button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #cfd9de;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0f1419;
+  transition: background-color 0.2s ease;
+}
+
+.more-ellipsis {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 1px;
+}
+
+.more-button:hover {
+  background-color: rgba(15, 20, 25, 0.1);
+}
+
+.follow-button {
+  background: #0f1419;
+  color: white;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.follow-button:hover {
+  background: #272c30;
+}
+
+/* Dark mode for profile actions */
+@media (prefers-color-scheme: dark) {
+  .more-button {
+    border-color: #536471;
+    color: #e7e9ea;
+  }
+
+  .more-ellipsis {
+    color: #e7e9ea;
+  }
+  
+  .more-button:hover {
+    background-color: rgba(231, 233, 234, 0.1);
+  }
+  
+  .follow-button {
+    background: #e7e9ea;
+    color: #0f1419;
+  }
+  
+  .follow-button:hover {
+    background: #d7dbdf;
+  }
+}
+
 /* User Info */
 .user-info {
   padding: 12px 16px;
@@ -89,6 +169,17 @@
   color: #000;
 }
 
+/* Dark mode for follow stats */
+@media (prefers-color-scheme: dark) {
+  .stat {
+    color: #8b98a5;
+  }
+  
+  .stat strong {
+    color: #e7e9ea;
+  }
+}
+
 /* Tabs */
 .profile-tabs {
   display: flex;
@@ -111,6 +202,14 @@
 .tab-button.active {
   color: #000;
   border-bottom: 2px solid #000;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tab-button { color: #8899a6; }
+  .tab-button.active {
+    color: #e7e9ea;
+    border-bottom-color: #1d9bf0;
+  }
 }
 
 /* Header */

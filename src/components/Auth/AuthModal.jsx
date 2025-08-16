@@ -10,7 +10,7 @@ import GoogleSignIn from './GoogleSignIn';
 export default function AuthModal({ onClose }) {
   const router = useRouter();
   const { login, isLoading } = useUser();
-  const [formData, setFormData] = useState({ identifier: '', password: '' });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState(null);
 
   const handleInputChange = (e) => {
@@ -22,7 +22,7 @@ export default function AuthModal({ onClose }) {
     e.preventDefault();
     setError(null);
     try {
-      await login({ email: formData.identifier, password: formData.password });
+      await login({ email: formData.email, password: formData.password });
       router.push('/profile');
     } catch (err) {
       setError(err.message || 'Login failed');
@@ -60,9 +60,9 @@ export default function AuthModal({ onClose }) {
             <input
               className="modal-input"
               type="text"
-              name="identifier"
-              placeholder="Email or username"
-              value={formData.identifier}
+                             name="email"
+               placeholder="Email"
+               value={formData.email}
               onChange={handleInputChange}
               required
             />
@@ -83,7 +83,7 @@ export default function AuthModal({ onClose }) {
             </button>
           </form>
 
-          <button className="secondary-btn" type="button" onClick={() => router.push('/flow/password_reset')}>
+          <button className="secondary-btn" type="button" onClick={() => router.push('/forgot')}>
             Forgot password?
           </button>
 

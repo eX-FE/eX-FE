@@ -2,21 +2,23 @@
 
 import styles from './Sidebar.module.css';
 import { useState } from 'react';
+import React from 'react';
 import { useUser } from '../context/UserContext';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function Sidebar({ onNavigate, currentPage }) {
   const { user } = useUser();
   const router = useRouter();
   const [showMenu, setShowMenu] = useState(false);
+  const menuRef = React.useRef(null);
+  const rowBtnRef = React.useRef(null);
 
   const menuItems = [
     { name: 'Home', icon: 'home' },
     { name: 'Explore', icon: 'search' },
     { name: 'Notifications', icon: 'bell' },
     { name: 'Messages', icon: 'mail' },
-    { name: 'Grok', icon: 'grok' },
-    { name: 'Communities', icon: 'communities' },
     { name: 'Profile', icon: 'profile' },
     { name: 'More', icon: 'more' }
   ];
@@ -85,6 +87,25 @@ export default function Sidebar({ onNavigate, currentPage }) {
 
   const hasAvatar = !!(user?.avatarUrl && user.avatarUrl.trim().length > 0);
 
+  // Close tooltip when clicking outside or pressing Escape
+  React.useEffect(() => {
+    function handleDocClick(e) {
+      if (!showMenu) return;
+      const inMenu = menuRef.current && menuRef.current.contains(e.target);
+      const inButton = rowBtnRef.current && rowBtnRef.current.contains(e.target);
+      if (!inMenu && !inButton) setShowMenu(false);
+    }
+    function handleKey(e) {
+      if (e.key === 'Escape') setShowMenu(false);
+    }
+    document.addEventListener('mousedown', handleDocClick);
+    document.addEventListener('keydown', handleKey);
+    return () => {
+      document.removeEventListener('mousedown', handleDocClick);
+      document.removeEventListener('keydown', handleKey);
+    };
+  }, [showMenu]);
+
   return (
     <div className={styles.sidebar}>
       {/* Logo */}
@@ -100,7 +121,21 @@ export default function Sidebar({ onNavigate, currentPage }) {
           <button
             key={item.name}
             className={`${styles.navItem} ${currentPage === item.name ? styles.active : ''}`}
-            onClick={() => onNavigate && onNavigate(item.name)}
+            onClick={() => {
+              if (item.name === 'Profile') {
+                router.push('/profile');
+                return;
+              }
+              if (item.name === 'Explore') {
+                router.push('/explore');
+                return;
+              }
+              if (item.name === 'Notifications') {
+                router.push('/notifications');
+                return;
+              }
+              if (onNavigate) onNavigate(item.name);
+            }}
           >
             {getIcon(item.icon, currentPage === item.name)}
             <span className={styles.navText}>{item.name}</span>
@@ -113,38 +148,32 @@ export default function Sidebar({ onNavigate, currentPage }) {
         <span className={styles.postBtnText}>Post</span>
       </button>
 
-      {/* User Profile */}
+      {/* User Profile - whole row opens tooltip */}
       <div className={styles.userProfile}>
-        <div className={styles.userAvatar}>
-          {hasAvatar ? (
-            <img src={user.avatarUrl} alt="avatar" />
-          ) : (
-            <div className={styles.avatarPlaceholder}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="#6b7280">
-                <path d="M12 2a5 5 0 100 10 5 5 0 000-10zm0 12c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5z" />
-              </svg>
-            </div>
-          )}
-        </div>
-        <div className={styles.userInfo} onClick={() => setShowMenu(v => !v)}>
-          <div className={styles.userName}>{user?.name || ''}</div>
-          <div className={styles.userHandle}>{user?.username ? `@${user.username}` : ''}</div>
-        </div>
-        <div className={styles.moreOptions}>
-          <button className={styles.moreBtn} onClick={(e) => { e.stopPropagation(); setShowMenu(v => !v); }} aria-label="More">
-            <svg viewBox="0 0 24 24" className={styles.moreIcon}>
-              <circle cx="5" cy="12" r="2" />
-              <circle cx="12" cy="12" r="2" />
-              <circle cx="19" cy="12" r="2" />
-            </svg>
-          </button>
-          {showMenu && (
-            <div className={styles.userMenu} role="menu">
-              <button className={styles.userMenuItem} onClick={() => router.push('/login')}>Add an existing account</button>
-              <button className={styles.userMenuItem} onClick={() => router.push('/logout')}>Log out @{user?.username || ''}</button>
-            </div>
-          )}
-        </div>
+        <button ref={rowBtnRef} className={styles.userProfileBtn} onClick={() => setShowMenu(v => !v)} aria-label="Account menu">
+          <div className={styles.userAvatar}>
+            {hasAvatar ? (
+              <img src={user.avatarUrl} alt="avatar" />
+            ) : (
+              <div className={styles.avatarPlaceholder}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="#6b7280">
+                  <path d="M12 2a5 5 0 100 10 5 5 0 000-10zm0 12c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5z" />
+                </svg>
+              </div>
+            )}
+          </div>
+          <div className={styles.userInfo}>
+            <div className={styles.userName}>{user?.name || ''}</div>
+            <div className={styles.userHandle}>{user?.username ? `@${user.username}` : ''}</div>
+          </div>
+          <span className={styles.ellipsis} aria-hidden>...</span>
+        </button>
+        {showMenu && (
+          <div ref={menuRef} className={styles.userMenu} role="menu">
+            <button className={styles.userMenuItem} onClick={() => router.push('/login')}>Add an existing account</button>
+            <button className={styles.userMenuItem} onClick={() => router.push('/logout')}>Log out @{user?.username || ''}</button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -3,6 +3,8 @@
 import { useUser } from '../context/UserContext';
 import { usePathname } from 'next/navigation';
 import Sidebar from './Sidebar';
+import RightSidebar from './RightSidebar';
+import styles from './AppShell.module.css';
 
 export default function AppShell({ children, modal }) {
   const { user } = useUser();
@@ -26,12 +28,22 @@ export default function AppShell({ children, modal }) {
   }
 
   return (
-    <>
-      <Sidebar onNavigate={() => {}} currentPage={'Home'} />
-      <div style={{ marginLeft: 275, minHeight: '100vh' }}>
+    <div className={styles.container}>
+      {/* Left Sidebar - 1/4 of screen */}
+      <div className={styles.leftSidebar}>
+        <Sidebar onNavigate={() => {}} currentPage={'Home'} />
+      </div>
+      
+      {/* Main Content - 2/4 of screen */}
+      <div className={styles.mainContent}>
         {children}
         {modal}
       </div>
-    </>
+      
+      {/* Right Sidebar - 1/4 of screen */}
+      <div className={styles.rightSidebar}>
+        <RightSidebar />
+      </div>
+    </div>
   );
 } 

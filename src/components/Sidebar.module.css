@@ -1,15 +1,11 @@
 .sidebar {
-  width: 275px;
+  width: 100%;
   height: 100vh;
   padding: 8px 16px 20px;
   display: flex;
   flex-direction: column;
-  position: fixed;
-  left: 0;
-  top: 0;
   background: white;
   border-right: 1px solid #eff3f4;
-  z-index: 1000;
 }
 
 .logo {
@@ -183,12 +179,26 @@
   position: absolute;
   bottom: 76px;
   left: 16px;
-  background: #0f1419;
-  color: #e7e9ea;
+  background: #fff;
+  color: #0f1419;
   border-radius: 12px;
   padding: 12px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  border: 1px solid #eff3f4;
   min-width: 260px;
+}
+
+.userMenu::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -8px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #fff;
 }
 
 .userMenuItem {
@@ -210,6 +220,25 @@
 
 /* Positioning context */
 .userProfile { position: relative; }
+
+.userProfileBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ellipsis {
+  margin-left: auto;
+  color: #536471;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
 
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
@@ -254,7 +283,8 @@
     fill: #71767b;
   }
 
-  .userMenu { background: #0f1419; color: #e7e9ea; }
+  .userMenu { background: #0f1419; color: #e7e9ea; border-color: #2f3336; }
+  .userMenu::after { border-top-color: #0f1419; }
 }
 
 /* Responsive design */
