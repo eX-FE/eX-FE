@@ -112,7 +112,8 @@ export async function uploadAvatar(file) {
   throw lastError || new Error('Avatar upload failed');
 }
 
-export async function searchUsers(query) {
+export async function searchUsers(query, opts = {}) {
+  const { signal } = opts || {};
   const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
   const q = (query || '').trim();
   if (!q) return { users: [] };
@@ -122,7 +123,9 @@ export async function searchUsers(query) {
     const res = await fetch(`${BACKEND_BASE_URL}/users/search?q=${encodeURIComponent(q)}`, {
       method: 'GET',
       headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      signal,
     });
+    if (res.status === 429) return { users: [] };
     if (res.ok) {
       const data = await res.json().catch(() => ({}));
       const rawUsers = Array.isArray(data.users) ? data.users : [];
@@ -137,13 +140,17 @@ export async function searchUsers(query) {
       }));
       return { users };
     }
-  } catch {}
+  } catch (e) {
+    if (e?.name === 'AbortError') return { users: [] };
+  }
 
   // Fallback: exact username lookup
   const res = await fetch(`${BACKEND_BASE_URL}/users/${encodeURIComponent(q)}`, {
     method: 'GET',
     headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    signal,
   });
+  if (res.status === 429) return { users: [] };
   if (res.status === 404) return { users: [] };
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || 'Search failed');
@@ -192,6 +199,11 @@ export async function followUser(username) {
     headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
   });
   const data = await res.json().catch(() => ({}));
+  if (res.status === 401) {
+    const err = new Error(data.error || 'Please log in again');
+    err.code = 'AUTH';
+    throw err;
+  }
   if (!res.ok) throw new Error(data.error || data.message || 'Follow failed');
   return data;
 }
@@ -203,13 +215,20 @@ export async function unfollowUser(username) {
     headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
   });
   const data = await res.json().catch(() => ({}));
+  if (res.status === 401) {
+    const err = new Error(data.error || 'Please log in again');
+    err.code = 'AUTH';
+    throw err;
+  }
   if (!res.ok) throw new Error(data.error || data.message || 'Unfollow failed');
   return data;
 }
 
 export async function getFollowers(username) {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
   const res = await fetch(`${BACKEND_BASE_URL}/follows/${encodeURIComponent(username)}/followers`, {
-    method: 'GET'
+    method: 'GET',
+    headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) }
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || 'Failed to load followers');
@@ -218,10 +237,31 @@ export async function getFollowers(username) {
 }
 
 export async function getFollowing(username) {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
   const res = await fetch(`${BACKEND_BASE_URL}/follows/${encodeURIComponent(username)}/following`, {
-    method: 'GET'
+    method: 'GET',
+    headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) }
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || 'Failed to load following');
   return data;
+}
+
+export async function getNotifications() {
+	const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+	if (!token) return { notifications: [] };
+	try {
+		const res = await fetch(`${BACKEND_BASE_URL}/notifications`, {
+			method: 'GET',
+			headers: { Authorization: `Bearer ${token}` }
+		});
+		if (!res.ok) {
+			const data = await res.json().catch(() => ({}));
+			throw new Error(data.error || 'Failed to load notifications');
+		}
+		const data = await res.json().catch(() => ({}));
+		return { notifications: Array.isArray(data.notifications) ? data.notifications : [] };
+	} catch {
+		return { notifications: [] };
+	}
 }

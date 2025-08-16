@@ -27,8 +27,9 @@ export default function RightSidebar() {
     }
 
     setIsSearching(true);
+    const controller = new AbortController();
     try {
-      const data = await searchUsers(query);
+      const data = await searchUsers(query, { signal: controller.signal });
       setSearchResults(data.users || []);
       setShowResults(true);
     } catch (error) {
@@ -37,18 +38,23 @@ export default function RightSidebar() {
     } finally {
       setIsSearching(false);
     }
+    return () => controller.abort();
   }, []);
 
   // Debounce search queries
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (searchQuery.length > 0) {
-        performSearch(searchQuery);
+        const cleanup = performSearch(searchQuery);
+        // if performSearch returned a cleanup (abort), call it when query changes
+        if (typeof cleanup === 'function') {
+          return cleanup;
+        }
       } else {
         setSearchResults([]);
         setShowResults(false);
       }
-    }, 300); // 300ms debounce
+    }, 350); // slight debounce
 
     return () => clearTimeout(timeoutId);
   }, [searchQuery, performSearch]);
@@ -116,7 +122,14 @@ export default function RightSidebar() {
     try {
       if (!firstFollowing) {
         setFirstFollowing(true);
-        try { await followUser(suggested.username); } catch {}
+        try { await followUser(suggested.username); } catch (e) {
+          if (e?.code === 'AUTH' || /(Invalid|Missing Authorization|User not found)/i.test(e?.message || '')) {
+            if (typeof window !== 'undefined') localStorage.removeItem('access_token');
+            router.push('/login');
+            return;
+          }
+          setFirstFollowing(false);
+        }
       } else {
         setFirstFollowing(false);
         try { await unfollowUser(suggested.username); } catch {}

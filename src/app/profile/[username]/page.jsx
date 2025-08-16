@@ -10,7 +10,8 @@ import ProfileTabs from '../../../components/User/ProfileTabs';
 import UserInfo from '../../../components/User/UserInfo';
 import '../../../components/User/profile.css';
 import { useUser } from '../../../context/UserContext';
-import { followUser, unfollowUser } from '../../../utils/api';
+import { followUser, unfollowUser, getFollowing } from '../../../utils/api';
+import UnfollowConfirmModal from '../../../components/Auth/UnfollowConfirmModal';
 
 export default function UserProfilePage() {
   const { username } = useParams();
@@ -25,6 +26,7 @@ export default function UserProfilePage() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const initializedFollowing = useRef(false);
+  const [showUnfollow, setShowUnfollow] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !currentUser) {
@@ -64,9 +66,26 @@ export default function UserProfilePage() {
   // derive initial following state from the profileUser when it loads
   useEffect(() => {
     if (profileUser && currentUser && !initializedFollowing.current) {
-      // profileUser may contain a boolean 'isFollowed' or 'following' flag from search results
-      setIsFollowing(Boolean(profileUser.isFollowed === true || profileUser.following === true));
-      initializedFollowing.current = true;
+      // Try to infer from passed data first
+      const guessed = Boolean(profileUser.isFollowed === true || profileUser.following === true);
+      if (guessed) {
+        setIsFollowing(true);
+        initializedFollowing.current = true;
+        return;
+      }
+      // Fallback to backend check
+      (async () => {
+        try {
+          const res = await getFollowing(currentUser.username);
+          const list = res.users || [];
+          const exists = list.some(u => (u.username || '').toLowerCase() === (profileUser.username || '').toLowerCase());
+          setIsFollowing(exists);
+        } catch {
+          setIsFollowing(false);
+        } finally {
+          initializedFollowing.current = true;
+        }
+      })();
     }
   }, [profileUser, currentUser]);
 
@@ -135,11 +154,16 @@ export default function UserProfilePage() {
                 // locally increment current user's following count
                 updateLocalUser({ following: (currentUser.following ?? 0) + 1 });
                 try {
-                  const res = await followUser(profileUser.username);
+                  const res = await followUser((profileUser.username || '').trim());
                   // reconcile with server response
                   if (res.actor) updateLocalUser(res.actor);
                   setProfileUser((prev) => ({ ...prev, followers: res.target?.followers ?? prev.followers, isFollowed: true }));
                 } catch (err) {
+                  if (err?.code === 'AUTH' || /(Invalid|Missing Authorization|User not found)/i.test(err?.message || '')) {
+                    if (typeof window !== 'undefined') localStorage.removeItem('access_token');
+                    router.push('/login');
+                    return;
+                  }
                   // revert optimistic updates on error
                   setIsFollowing(false);
                   setProfileUser((prev) => ({ ...prev, followers: Math.max(0, (prev.followers ?? 1) - 1), isFollowed: false }));
@@ -149,23 +173,9 @@ export default function UserProfilePage() {
                   setActionLoading(false);
                 }
               } else {
-                // currently following -> optimistic unfollow
-                setIsFollowing(false);
-                setProfileUser((prev) => ({ ...prev, followers: Math.max(0, (prev.followers ?? 1) - 1), isFollowed: false }));
-                updateLocalUser({ following: Math.max(0, (currentUser.following ?? 1) - 1) });
-                try {
-                  const res = await unfollowUser(profileUser.username);
-                  if (res.actor) updateLocalUser(res.actor);
-                  setProfileUser((prev) => ({ ...prev, followers: res.target?.followers ?? prev.followers, isFollowed: false }));
-                } catch (err) {
-                  // revert optimistic changes on error
-                  setIsFollowing(true);
-                  setProfileUser((prev) => ({ ...prev, followers: (prev.followers ?? 0) + 1, isFollowed: true }));
-                  updateLocalUser({ following: (currentUser.following ?? 0) + 1 });
-                  setError(err.message || 'Unfollow failed');
-                } finally {
-                  setActionLoading(false);
-                }
+                // Open confirmation modal for unfollow
+                setActionLoading(false);
+                setShowUnfollow(true);
               }
             }}
           >
@@ -188,6 +198,36 @@ export default function UserProfilePage() {
       />
 
       <ProfileTabs />
+      {showUnfollow && (
+        <UnfollowConfirmModal
+          username={(profileUser.username || '').trim()}
+          onConfirm={async () => {
+            setShowUnfollow(false);
+            setActionLoading(true);
+            try {
+              setIsFollowing(false);
+              setProfileUser((prev) => ({ ...prev, followers: Math.max(0, (prev.followers ?? 1) - 1), isFollowed: false }));
+              updateLocalUser({ following: Math.max(0, (currentUser.following ?? 1) - 1) });
+              const res = await unfollowUser((profileUser.username || '').trim());
+              if (res.actor) updateLocalUser(res.actor);
+              setProfileUser((prev) => ({ ...prev, followers: res.target?.followers ?? prev.followers, isFollowed: false }));
+            } catch (err) {
+              if (err?.code === 'AUTH' || /(Invalid|Missing Authorization|User not found)/i.test(err?.message || '')) {
+                if (typeof window !== 'undefined') localStorage.removeItem('access_token');
+                router.push('/login');
+                return;
+              }
+              setIsFollowing(true);
+              setProfileUser((prev) => ({ ...prev, followers: (prev.followers ?? 0) + 1, isFollowed: true }));
+              updateLocalUser({ following: (currentUser.following ?? 0) + 1 });
+              setError(err.message || 'Unfollow failed');
+            } finally {
+              setActionLoading(false);
+            }
+          }}
+          onCancel={() => setShowUnfollow(false)}
+        />
+      )}
     </div>
   );
 } 

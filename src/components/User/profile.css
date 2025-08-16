@@ -204,6 +204,14 @@
   border-bottom: 2px solid #000;
 }
 
+@media (prefers-color-scheme: dark) {
+  .tab-button { color: #8899a6; }
+  .tab-button.active {
+    color: #e7e9ea;
+    border-bottom-color: #1d9bf0;
+  }
+}
+
 /* Header */
 .profile-header {
   display: flex;

@@ -5,6 +5,7 @@ const { apiLimiter } = require('./middleware/rateLimit');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const followRoutes = require('./routes/followRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5050;
@@ -37,6 +38,7 @@ app.get('/tweets', (req, res) => {
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes); // mount users routes
 app.use('/follows', followRoutes);
+app.use('/notifications', notificationRoutes);
 
 // Fallback
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
