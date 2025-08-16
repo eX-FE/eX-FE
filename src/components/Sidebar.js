@@ -19,8 +19,6 @@ export default function Sidebar({ onNavigate, currentPage }) {
     { name: 'Explore', icon: 'search' },
     { name: 'Notifications', icon: 'bell' },
     { name: 'Messages', icon: 'mail' },
-    { name: 'Grok', icon: 'grok' },
-    { name: 'Communities', icon: 'communities' },
     { name: 'Profile', icon: 'profile' },
     { name: 'More', icon: 'more' }
   ];
@@ -130,6 +128,10 @@ export default function Sidebar({ onNavigate, currentPage }) {
               }
               if (item.name === 'Explore') {
                 router.push('/explore');
+                return;
+              }
+              if (item.name === 'Notifications') {
+                router.push('/notifications');
                 return;
               }
               if (onNavigate) onNavigate(item.name);
