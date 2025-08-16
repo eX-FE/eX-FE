@@ -29,22 +29,27 @@ export default function ExplorePage() {
       return;
     }
     setIsSearching(true);
+    const controller = new AbortController();
     try {
-      const data = await searchUsers(t);
+      const data = await searchUsers(t, { signal: controller.signal });
       setResults(data.users || []);
       setShowResults(true);
-    } catch {
-      setResults([]);
-      setShowResults(false);
+    } catch (e) {
+      if (e?.name !== 'AbortError') {
+        setResults([]);
+        setShowResults(false);
+      }
     } finally {
       setIsSearching(false);
     }
+    return () => controller.abort();
   }, []);
 
   useEffect(() => {
     const id = setTimeout(() => {
-      performSearch(query);
-    }, 300);
+      const cleanup = performSearch(query);
+      if (typeof cleanup === 'function') cleanup();
+    }, 350);
     return () => clearTimeout(id);
   }, [query, performSearch]);
 
