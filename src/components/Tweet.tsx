@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tweet as TweetType } from '../types/Tweet';
 import styles from './Tweet.module.css';
 
@@ -10,18 +10,38 @@ interface TweetProps {
 }
 
 const Tweet: React.FC<TweetProps> = ({ tweet, onLike, onRetweet, onReply }) => {
-  const formatTimeAgo = (date: Date) => {
-    const now = new Date();
-    const diffInMs = now.getTime() - date.getTime();
-    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+  const [timeAgo, setTimeAgo] = useState<string>('');
+  const [isClient, setIsClient] = useState(false);
 
-    if (diffInMinutes < 1) return 'now';
-    if (diffInMinutes < 60) return `${diffInMinutes}m`;
-    if (diffInHours < 24) return `${diffInHours}h`;
-    return `${diffInDays}d`;
-  };
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+
+    const formatTimeAgo = (date: Date) => {
+      const now = new Date();
+      const diffInMs = now.getTime() - date.getTime();
+      const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+      const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+      const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+      if (diffInMinutes < 1) return 'now';
+      if (diffInMinutes < 60) return `${diffInMinutes}m`;
+      if (diffInHours < 24) return `${diffInHours}h`;
+      return `${diffInDays}d`;
+    };
+
+    setTimeAgo(formatTimeAgo(tweet.createdAt));
+
+    // Update every minute
+    const interval = setInterval(() => {
+      setTimeAgo(formatTimeAgo(tweet.createdAt));
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [tweet.createdAt, isClient]);
 
   const handleLike = () => {
     if (onLike) {
@@ -57,7 +77,7 @@ const Tweet: React.FC<TweetProps> = ({ tweet, onLike, onRetweet, onReply }) => {
         <div className={styles.header}>
           <span className={styles.author}>{tweet.author}</span>
           <span className={styles.username}>@{tweet.author.toLowerCase().replace(/\s+/g, '')}</span>
-          <span className={styles.timestamp}>{formatTimeAgo(tweet.createdAt)}</span>
+          <span className={styles.timestamp}>{timeAgo}</span>
         </div>
         
         <div className={styles.text}>

@@ -1,0 +1,55 @@
+.tweetsContainer {
+  display: flex;
+  width: 100%;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.mainContent {
+  flex: 1;
+  min-width: 0;
+  background: var(--background);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.sidebarContainer {
+  width: 350px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 16px;
+  height: fit-content;
+  padding-top: 16px;
+}
+
+/* Responsive design */
+@media (max-width: 1280px) {
+  .tweetsContainer {
+    gap: 0;
+    max-width: 100%;
+    padding: 0 16px;
+  }
+  
+  .sidebarContainer {
+    display: none;
+  }
+  
+  .mainContent {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .tweetsContainer {
+    gap: 0;
+    padding: 0 8px;
+  }
+  
+  .mainContent {
+    max-width: 100%;
+  }
+}

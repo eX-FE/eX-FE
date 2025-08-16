@@ -3,12 +3,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f8f9fa;
+  background: var(--background);
   padding: 20px;
 }
 
 .login-container { 
-  background: white;
+  background: var(--background);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 40px;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -25,11 +26,11 @@
   font-size: 24px;
   font-weight: bold;
   margin: 0 0 8px 0;
-  color: #000;
+  color: var(--foreground);
 }
 
 .login-subtitle {
-  color: #666;
+  color: rgba(128, 128, 128, 0.8);
   font-size: 14px;
   margin: 0;
 }
@@ -49,12 +50,14 @@
 .form-label {
   font-weight: 500;
   font-size: 14px;
-  color: #333;
+  color: var(--foreground);
 }
 
 .form-input {
   padding: 12px;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  background: var(--background);
+  color: var(--foreground);
   border-radius: 6px;
   font-size: 14px;
   transition: border-color 0.2s;
@@ -62,11 +65,11 @@
 
 .form-input:focus {
   outline: none;
-  border-color: #000;
+  border-color: #1d9bf0;
 }
 
 .form-input::placeholder {
-  color: #999;
+  color: rgba(128, 128, 128, 0.6);
 }
 
 .form-options {
@@ -89,12 +92,12 @@
 
 .checkbox-text {
   font-size: 14px;
-  color: #555;
+  color: var(--foreground);
 }
 
 .forgot-password {
   font-size: 14px;
-  color: #000;
+  color: #1d9bf0;
   text-decoration: none;
 }
 
@@ -104,7 +107,7 @@
 
 .login-button {
   padding: 12px;
-  background-color: #000;
+  background-color: #1d9bf0;
   color: white;
   border: none;
   border-radius: 6px;
@@ -114,12 +117,17 @@
   transition: background-color 0.2s;
 }
 
-.login-button:hover {
-  background-color: #333;
+.login-button:hover:not(:disabled) {
+  background-color: #1a8cd8;
+}
+
+.login-button:disabled {
+  background-color: rgba(29, 155, 240, 0.5);
+  cursor: not-allowed;
 }
 
 .error-text {
-  color: #c0392b;
+  color: #f4212e;
   font-size: 14px;
 }
 
@@ -130,12 +138,12 @@
 
 .signup-text {
   font-size: 14px;
-  color: #666;
+  color: var(--foreground);
   margin: 0;
 }
 
 .signup-link {
-  color: #000;
+  color: #1d9bf0;
   text-decoration: none;
   font-weight: 500;
 }
@@ -148,7 +156,7 @@
 .auth-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0,0,0,0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -166,6 +174,7 @@
   box-shadow: 0 10px 40px rgba(0,0,0,0.2);
 }
 
+/* Close button: plain larger X (no circle) */
 .modal-close {
   position: absolute;
   top: 12px;
@@ -186,7 +195,7 @@
   }
 }
 
-/* Modal logo light/dark */
+/* Modal logo light/dark (ensure visible) */
 .modal-logo { margin-top: 4px; display: flex; align-items: center; justify-content: center; }
 .modal-logo-light { display: block; filter: invert(1) brightness(0); }
 .modal-logo-dark { display: none; }
@@ -249,20 +258,6 @@
   border: 1px solid #e5e7eb;
   padding: 0 14px;
   font-size: 16px;
-  background: #f7f9f9; /* light mode: not pure white */
-  color: #0f1419;
-}
-
-/* Shared textarea styling for modals */
-.modal-textarea {
-  width: 100%;
-  min-height: 120px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  padding: 12px;
-  font-size: 16px;
-  background: #f7f9f9; /* light mode */
-  color: #0f1419;
 }
 
 .primary-btn {
@@ -325,6 +320,8 @@
 
 .btn-link { display: block; text-align: center; text-decoration: none; line-height: 44px; }
 .landing-already { margin-top: 24px; font-weight: 700; }
+
+/* Make Create account blue on landing (light mode too) */
 .landing .primary-btn { background: #1d9bf0; color: #fff; }
 .landing .primary-btn:hover { background: #1a8cd8; }
 
@@ -358,6 +355,7 @@
   .landing { column-gap: 24px; }
 }
 
+/* Dark mode: modal-specific styles to match X */
 @media (prefers-color-scheme: dark) {
   .auth-modal { background: #000; color: #e7e9ea; }
   .modal-close { background: #000; border-color: #2f3336; color: #e7e9ea; }
@@ -368,7 +366,6 @@
 
   .modal-input { background: #000; border-color: #2f3336; color: #e7e9ea; }
   .modal-input::placeholder { color: #8b98a5; }
-  .modal-textarea { background: #000; border-color: #2f3336; color: #e7e9ea; }
 
   .divider { color: #8b98a5; }
   .divider:before, .divider:after { background: #2f3336; }
@@ -384,9 +381,10 @@
 
 /* Dark mode: restore modal overlay color only */
 @media (prefers-color-scheme: dark) {
-  .auth-overlay { background: rgba(21, 32, 43, 0.45); backdrop-filter: blur(2px); }
+  .auth-overlay { background: rgba(21, 32, 43, 0.6); backdrop-filter: blur(2px); }
 }
 
+/* Override Google button container inside modals to avoid double-styling */
 .auth-modal .oauth-google {
   height: auto;
   border: none;
@@ -407,12 +405,17 @@
   .modal-content { width: 100%; }
 }
 
+/* Landing logo tweaks */
 .landing-logo { max-width: 80%; height: auto; }
 @media (max-width: 900px) { .landing-logo { max-width: 60%; } }
 
+/***** Ensure visibility *****/
 /* Light mode: invert white PNG to appear black */
 .landing-logo-light { filter: invert(1) brightness(0); }
 /* Dark mode rule already shows the white asset without filter */
+@media (prefers-color-scheme: dark) {
+  .landing-logo-light { filter: none; }
+}
 
 /* Override Google button container on landing to avoid double-styling */
 .landing .oauth-google {
@@ -425,10 +428,12 @@
 }
 .landing .oauth-google > div { width: 100% !important; }
 
+/* Signup flow specific tweaks */
 .signup-flow .modal-input {
   border-radius: 6px;
 }
 
+/* Create account flow input radius */
 .create-flow .modal-input {
   border-radius: 6px;
 }
@@ -444,25 +449,29 @@
   cursor: not-allowed;
 }
 
+/* Make the signup flow content take 3/4 of modal width */
 .signup-flow { width: 75%; }
 @media (max-width: 640px) {
   .signup-flow { width: 100%; }
 }
 
+/* Overlay: 50% black with slight blur for strong see-through */
 .auth-overlay {
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(2px);
 }
 @media (prefers-color-scheme: dark) {
   .auth-overlay {
-    background: rgba(21, 32, 43, 0.45);
+    background: rgba(0, 0, 0, 0.5);
   }
 }
 
+/* Signup flow spacing tweaks */
 .signup-flow .form-group { margin: 22px 0; }
 .inline-row { margin-top: 10px; }
 .signup-flow .section-subtext { font-size: 14px; }
 
+/* Input prefix/suffix wrappers */
 .input-wrap { position: relative; }
 .input-prefix {
   position: absolute;
@@ -487,408 +496,12 @@
 }
 .modal-input.with-suffix { padding-right: 34px; }
 
+/* Signup first-step specific spacing */
 .signup-first .form-group:first-of-type { margin-top: 10px; }
 .signup-first .form-group:nth-of-type(2) { margin-top: 0px; margin-bottom: 20px; }
 
+/* Ensure DOB selects render properly */
 .inline-row select.modal-input {
   display: block;
   width: 100%;
-}
-
-/* Logout modal tweaks: smaller card, tighter spacing */
-.logout-overlay { background: rgba(107, 114, 128, 0.25); backdrop-filter: blur(2px); }
-.logout-modal { max-width: 420px; border-radius: 16px; }
-.logout-modal .modal-title { font-size: 22px; }
-.logout-modal .modal-content { padding-top: 12px; }
-
-@media (prefers-color-scheme: dark) {
-  /* Dark: slightly lighter gray overlay so modal stands out on near-black bg */
-  .logout-overlay { background: rgba(47, 51, 54, 0.6); }
-  .logout-modal { background: #0f1419; border: 1px solid #2f3336; }
-}
-
-/* Profile Setup Modal Styles */
-.profile-setup-modal {
-  max-width: 600px;
-  min-height: 650px;
-}
-
-.profile-setup-modal .modal-content {
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 20px 0;
-}
-
-.modal-subtitle {
-  text-align: center;
-  color: #536471;
-  font-size: 15px;
-  margin: 8px 0 32px;
-  line-height: 1.4;
-}
-
-/* Profile Picture Upload */
-.profile-picture-upload {
-  display: flex;
-  justify-content: center;
-  margin: 40px 0 60px;
-}
-
-.profile-picture-circle {
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  background: #f7f9fa;
-  border: 4px solid #e1e8ed;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.2s ease;
-}
-
-.profile-picture-circle:hover {
-  background: #e8f5fe;
-  border-color: #1d9bf0;
-}
-
-.profile-picture-circle .camera-icon svg { display: block; }
-.profile-picture-circle .camera-icon {
-  color: #536471;
-}
-
-.uploaded-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-}
-
-.remove-image-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.75);
-  color: white;
-  border: 2px solid white;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  z-index: 10;
-}
-
-.remove-image-btn:hover {
-  background: rgba(0, 0, 0, 0.9);
-  transform: scale(1.1);
-}
-
-/* Header Picture Upload */
-.header-picture-upload {
-  margin: 30px 0 40px;
-}
-
-.header-picture-area {
-  width: 100%;
-  height: 200px;
-  background: #f7f9fa;
-  border: 2px dashed #e1e8ed;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.2s ease;
-}
-
-.header-picture-area:hover {
-  background: #e8f5fe;
-  border-color: #1d9bf0;
-}
-
-.header-picture-area .camera-icon svg { display: block; }
-.header-picture-area .camera-icon {
-  color: #536471;
-}
-
-.uploaded-header {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 16px;
-}
-
-.remove-header-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.75);
-  color: white;
-  border: 2px solid white;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  z-index: 10;
-}
-
-.remove-header-btn:hover {
-  background: rgba(0, 0, 0, 0.9);
-  transform: scale(1.1);
-}
-
-/* Profile Preview */
-.profile-preview {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 20px 0;
-  padding: 12px;
-  background: #f7f9fa;
-  border-radius: 12px;
-}
-
-.profile-picture-small {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #e1e8ed;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.uploaded-image-small {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.default-avatar {
-  width: 100%;
-  height: 100%;
-  background: #e1e8ed;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.default-avatar::before { display: none; }
-
-.profile-info-preview {
-  flex: 1;
-}
-
-.profile-name {
-  font-weight: 700;
-  font-size: 15px;
-  color: #0f1419;
-  margin-bottom: 2px;
-}
-
-.profile-username {
-  color: #536471;
-  font-size: 15px;
-}
-
-/* Bio Input */
-.bio-input-container {
-  position: relative;
-  margin: 30px 0 40px;
-}
-
-.bio-textarea {
-  width: 100%;
-  min-height: 100px;
-  padding: 16px;
-  border: 1px solid #e1e8ed;
-  border-radius: 12px;
-  font-size: 16px;
-  font-family: inherit;
-  resize: vertical;
-  outline: none;
-  transition: border-color 0.2s ease;
-}
-
-.bio-textarea:focus {
-  border-color: #1d9bf0;
-}
-
-.bio-textarea::placeholder {
-  color: #536471;
-}
-
-.char-count {
-  position: absolute;
-  bottom: -24px;
-  right: 0;
-  font-size: 13px;
-  color: #536471;
-}
-
-.bio-icons {
-  position: absolute;
-  bottom: 12px;
-  left: 12px;
-  display: flex;
-  gap: 12px;
-}
-
-.emoji-icon, .gif-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-}
-
-.emoji-icon:hover, .gif-icon:hover {
-  background: rgba(29, 155, 240, 0.1);
-}
-
-.gif-icon svg { display: block; }
-
-/* Location Input */
-.location-input-container {
-  position: relative;
-  margin: 30px 0 40px;
-}
-
-.location-input-container .char-count {
-  bottom: -24px;
-}
-
-/* Save Button */
-.save-btn {
-  width: 100%;
-  height: 52px;
-  background: #0f1419;
-  color: #fff;
-  border: none;
-  border-radius: 26px;
-  font-size: 17px;
-  font-weight: 700;
-  cursor: pointer;
-  margin: 40px 0 20px;
-  transition: background-color 0.2s ease;
-}
-
-.save-btn:hover {
-  background: #272c30;
-}
-
-/* Dark Mode Styles */
-@media (prefers-color-scheme: dark) {
-  .profile-setup-modal {
-    background: #000;
-    color: #e7e9ea;
-  }
-
-  .modal-subtitle {
-    color: #8b98a5;
-  }
-  
-  .profile-picture-circle {
-    background: #16181c;
-    border-color: #2f3336;
-  }
-
-  .profile-picture-circle:hover {
-    background: #1e2732;
-    border-color: #1d9bf0;
-  }
-  
-  .profile-picture-circle .camera-icon {
-    color: #8b98a5;
-  }
-
-  .header-picture-area {
-    background: #16181c;
-    border-color: #2f3336;
-  }
-  
-  .header-picture-area:hover {
-    background: #1e2732;
-    border-color: #1d9bf0;
-  }
-
-  .header-picture-area .camera-icon {
-    color: #8b98a5;
-  }
-
-  .profile-preview {
-    background: #16181c;
-  }
-  
-  .profile-name {
-    color: #e7e9ea;
-  }
-
-  .profile-username {
-    color: #8b98a5;
-  }
-
-  .default-avatar {
-    background: #2f3336;
-  }
-
-  .default-avatar::before {
-    color: #8b98a5;
-  }
-
-  .bio-textarea {
-    background: #000;
-    border-color: #2f3336;
-    color: #e7e9ea;
-  }
-  
-  .bio-textarea:focus {
-    border-color: #1d9bf0;
-  }
-  
-  .bio-textarea::placeholder {
-    color: #8b98a5;
-  }
-
-  .char-count {
-    color: #8b98a5;
-  }
-
-  .save-btn {
-    background: #e7e9ea;
-    color: #0f1419;
-  }
-  
-  .save-btn:hover {
-    background: #d7dbdc;
-  }
-  
-  .profile-setup-modal .modal-input {
-    background: #000;
-    border-color: #2f3336;
-    color: #e7e9ea;
-  }
-
-  .profile-setup-modal .modal-input::placeholder {
-    color: #8b98a5;
-  }
 }

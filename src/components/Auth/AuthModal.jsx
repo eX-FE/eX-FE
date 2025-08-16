@@ -10,7 +10,7 @@ import GoogleSignIn from './GoogleSignIn';
 export default function AuthModal({ onClose }) {
   const router = useRouter();
   const { login, isLoading } = useUser();
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ identifier: '', password: '' });
   const [error, setError] = useState(null);
 
   const handleInputChange = (e) => {
@@ -22,7 +22,7 @@ export default function AuthModal({ onClose }) {
     e.preventDefault();
     setError(null);
     try {
-      await login({ email: formData.email, password: formData.password });
+      await login({ email: formData.identifier, password: formData.password });
       router.push('/profile');
     } catch (err) {
       setError(err.message || 'Login failed');
@@ -47,7 +47,7 @@ export default function AuthModal({ onClose }) {
           <h1 className="modal-title">Sign in to X</h1>
 
           <div className="oauth-row">
-            <GoogleSignIn onSuccess={() => router.push('/profile')} />
+            <GoogleSignIn />
           </div>
 
           <button className="oauth-apple" type="button"> Sign in with Apple</button>
@@ -60,9 +60,9 @@ export default function AuthModal({ onClose }) {
             <input
               className="modal-input"
               type="text"
-                             name="email"
-               placeholder="Email"
-               value={formData.email}
+              name="identifier"
+              placeholder="Phone, email, or username"
+              value={formData.identifier}
               onChange={handleInputChange}
               required
             />
@@ -83,7 +83,7 @@ export default function AuthModal({ onClose }) {
             </button>
           </form>
 
-          <button className="secondary-btn" type="button" onClick={() => router.push('/forgot')}>
+          <button className="secondary-btn" type="button" onClick={() => router.push('/flow/password_reset')}>
             Forgot password?
           </button>
 

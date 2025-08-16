@@ -94,9 +94,11 @@ const Feed: React.FC<FeedProps> = ({
 
   return (
     <div className={styles.feed}>
-      <div className={styles.header}>
-        <h1 className={styles.headerTitle}>{title}</h1>
-      </div>
+      {title && (
+        <div className={styles.header}>
+          <h1 className={styles.headerTitle}>{title}</h1>
+        </div>
+      )}
       
       {showComposer && (
         <div className={styles.composerSection}>

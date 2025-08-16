@@ -63,7 +63,9 @@ export default function Layout({ children }: LayoutProps) {
         </button>
       </div>
       <div className={styles.mainContent}>
-        {children}
+        <div className={styles.contentWrapper}>
+          {children}
+        </div>
       </div>
     </div>
     </UserProvider>

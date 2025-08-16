@@ -2,15 +2,98 @@ const API_BASE_URL = 'http://localhost:5000';
 
 export async function fetchTweets() {
   try {
-    const res = await fetch(`${API_BASE_URL}/tweets`);
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+    const res = await fetch(`${API_BASE_URL}/api/tweets`, {
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
     
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
     }
     
-    return res.json();
+    const data = await res.json();
+    return data.tweets || [];
   } catch (error) {
     console.error('Error fetching tweets:', error);
+    throw error;
+  }
+}
+
+export async function createTweet(content: string, imageUrl?: string) {
+  try {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+    if (!token) throw new Error('Authentication required');
+
+    const res = await fetch(`${API_BASE_URL}/api/tweets`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ content, imageUrl }),
+    });
+
+    const data = await res.json();
+    
+    if (!res.ok) {
+      throw new Error(data.error || 'Failed to create tweet');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error creating tweet:', error);
+    throw error;
+  }
+}
+
+export async function deleteTweet(tweetId: string) {
+  try {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+    if (!token) throw new Error('Authentication required');
+
+    const res = await fetch(`${API_BASE_URL}/api/tweets/${tweetId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+    
+    if (!res.ok) {
+      throw new Error(data.error || 'Failed to delete tweet');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error deleting tweet:', error);
+    throw error;
+  }
+}
+
+export async function likeTweet(tweetId: string) {
+  try {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+    if (!token) throw new Error('Authentication required');
+
+    const res = await fetch(`${API_BASE_URL}/api/tweets/${tweetId}/like`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+    
+    if (!res.ok) {
+      throw new Error(data.error || 'Failed to like tweet');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error liking tweet:', error);
     throw error;
   }
 }
