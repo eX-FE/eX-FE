@@ -1,0 +1,117 @@
+.composer {
+  display: flex;
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--card-bg);
+}
+
+.avatar {
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.avatar img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.defaultAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.textarea {
+  border: none;
+  outline: none;
+  resize: none;
+  font-size: 20px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background-color: transparent;
+  min-height: 60px;
+  padding: 12px 0;
+  line-height: 24px;
+}
+
+.textarea::placeholder {
+  color: var(--text-secondary);
+}
+
+.textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.charCount {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-right: 12px;
+}
+
+.charCount.warning {
+  color: #f4212e;
+  font-weight: bold;
+}
+
+.tweetButton {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  padding: 8px 24px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  min-width: 80px;
+  height: 36px;
+}
+
+.tweetButton:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+}
+
+.tweetButton:disabled {
+  background-color: rgba(29, 155, 240, 0.5);
+  cursor: not-allowed;
+}
+
+@media (max-width: 500px) {
+  .composer {
+    padding: 12px;
+  }
+  
+  .textarea {
+    font-size: 18px;
+    min-height: 50px;
+  }
+}
