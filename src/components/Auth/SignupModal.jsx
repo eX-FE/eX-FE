@@ -17,20 +17,20 @@ export default function SignupModal({ onClose }) {
         <button aria-label="Close" className="modal-close" onClick={handleClose}>×</button>
         <div className="modal-content">
           <div className="modal-logo" aria-hidden>
-            <Image className="modal-logo-light" src="/x-logo.svg" alt="X" width={28} height={28} priority />
+            <Image className="modal-logo-light" src="/x-logo-white.png" alt="X" width={26} height={26} priority />
             <Image className="modal-logo-dark" src="/x-logo-white.png" alt="X" width={28} height={28} priority />
           </div>
           <h1 className="modal-title">Join X today</h1>
 
           <div className="oauth-row">
-            <GoogleSignIn onSuccess={() => router.push('/profile')} />
+            <GoogleSignIn />
           </div>
 
           <button className="oauth-apple" type="button"> Sign up with Apple</button>
 
           <div className="divider"><span>or</span></div>
 
-          <a href="/signup/details" className="primary-btn" style={{ display: 'inline-block', textAlign: 'center', textDecoration: 'none', lineHeight: '44px' }}>
+          <a href="/signup/create" className="primary-btn" style={{ display: 'inline-block', textAlign: 'center', textDecoration: 'none', lineHeight: '44px' }}>
             Create account
           </a>
 

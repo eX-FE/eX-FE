@@ -1,4 +1,4 @@
-const BACKEND_BASE_URL = 'http://localhost:5050';
+const BACKEND_BASE_URL = 'http://localhost:5000';
 const API_BASE_URL = 'http://localhost:8080/apiman-gateway/default/tweets-api/1.0';
 
 export async function fetchTweets() {

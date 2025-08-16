@@ -1,12 +1,24 @@
 :root {
   --background: #ffffff;
   --foreground: #0f1419;
+  --border: rgb(239, 243, 244);
+  --hover: rgb(247, 249, 249);
+  --primary: rgb(29, 155, 240);
+  --primary-hover: rgb(26, 140, 216);
+  --secondary: rgb(83, 100, 113);
+  --accent: rgb(239, 243, 244);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #000000;
     --foreground: #e7e9ea;
+    --border: rgb(47, 51, 54);
+    --hover: rgb(22, 24, 28);
+    --primary: rgb(29, 155, 240);
+    --primary-hover: rgb(26, 140, 216);
+    --secondary: rgb(113, 118, 123);
+    --accent: rgb(32, 35, 39);
   }
 }
 

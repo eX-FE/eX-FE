@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - eX Twitter</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #000;
+            color: #fff;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .offline-container {
+            max-width: 400px;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 32px;
+            filter: invert(1);
+        }
+        
+        h1 {
+            font-size: 31px;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+        
+        p {
+            font-size: 17px;
+            color: #8b98a5;
+            line-height: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .retry-btn {
+            background: #1d9bf0;
+            border: none;
+            border-radius: 20px;
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .retry-btn:hover {
+            background: #1a8cd8;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <img src="/x-logo-white.png" alt="eX Logo" class="logo">
+        <h1>You're offline</h1>
+        <p>Check your internet connection and try again. Your drafts are saved locally.</p>
+        <button class="retry-btn" onclick="window.location.reload()">
+            Try again
+        </button>
+    </div>
+</body>
+</html>

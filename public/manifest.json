@@ -1,0 +1,70 @@
+{
+  "name": "eX Twitter Clone",
+  "short_name": "eX",
+  "description": "A modern Twitter clone with real-time features",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#1d9bf0",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/x-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/x-logo-white.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/x-logo-white.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["social", "entertainment"],
+  "screenshots": [
+    {
+      "src": "/screenshot-home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "features": [
+    "Cross Platform",
+    "Fast",
+    "Real-time updates",
+    "Offline support"
+  ],
+  "shortcuts": [
+    {
+      "name": "Home Feed",
+      "short_name": "Home",
+      "description": "View your home timeline",
+      "url": "/home",
+      "icons": [
+        {
+          "src": "/x-logo.svg",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Compose Tweet",
+      "short_name": "Tweet",
+      "description": "Create a new tweet",
+      "url": "/compose",
+      "icons": [
+        {
+          "src": "/x-logo.svg",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}
